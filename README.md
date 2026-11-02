@@ -30,7 +30,6 @@ Accept payments → Get started (Create account / Login tabs) → Creating accou
 - Sample account: `john.parker@naplesstore.com` / `Naples#2026`. The password rules turn green as they're met.
 - The eye button shows or hides the password.
 - After signing in, each step shows "Signed in as …" with **Sign out**, which opens the "Sign out?" dialog.
-- With **Fail the next submission** on, Create account says the email is taken and Login says the password doesn't match.
 
 ### Manage · Transactions
 
@@ -40,7 +39,6 @@ Payments › Transactions in the back office (opens after onboarding, or from th
 - **Recent transactions:** All and Disputes tabs, a working Status filter (plus Payment method / Reason), pagination, and Export (date ranges, custom dates, column sets).
 - **Payment details:** fee breakdown, payment method, timeline, and Begin refund → Send refund (amount checks). Refunds update the status and timeline.
 - **Disputed payment:** dispute card with step-by-step guide, Accept dispute (confirm), and Counter dispute: 3 prefilled steps (reason, customer details, evidence upload) plus a review step.
-- **Fail the next submission** (Prototype menu) makes the next payout, refund or evidence submission fail.
 
 
 ### Manage · Payouts
