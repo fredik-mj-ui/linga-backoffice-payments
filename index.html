@@ -190,6 +190,61 @@ img { display: block; max-width: none; }
 .selected-acct { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; background: #f1f7fa; border: 1px solid #cfe3ec; }
 .selected-acct .t { flex: 1; min-width: 0; }
 
+/* Link popup */
+.lk { width: 396px; max-width: 100%; height: min(704px, calc(100vh - 32px)); background: #fff; border-radius: 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, .28); display: flex; flex-direction: column; overflow: hidden; font-family: var(--font); color: #1d1d1d; }
+.lk-head { position: relative; flex: none; display: flex; justify-content: center; align-items: center; padding: 20px 68px 4px; min-height: 76px; }
+.lk-logo { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 28px; line-height: 1; letter-spacing: -.8px; color: #011e0f; }
+.lk-x { position: absolute; right: 18px; top: 18px; width: 40px; height: 40px; border-radius: 50%; background: #f2f2f2; display: grid; place-items: center; }
+.lk-x:hover { background: #e6e6e6; }
+.lk-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 20px; padding: 12px 20px 22px; overflow-y: auto; }
+.lk-pair { display: flex; justify-content: center; gap: 14px; }
+.lk-pair img { width: 72px; height: 72px; border-radius: 14px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .06); }
+.lk-sq { width: 72px; height: 72px; border-radius: 14px; background: #00D66F; display: grid; place-items: center; }
+.lk-title { margin: 0; text-align: center; font-size: 26px; line-height: 34px; font-weight: 600; letter-spacing: -.3px; color: #1d1d1d; text-wrap: balance; }
+.lk-points { display: flex; flex-direction: column; gap: 16px; padding: 0 6px; }
+.lk-pt { display: flex; gap: 16px; align-items: flex-start; }
+.lk-ico { width: 50px; height: 50px; border-radius: 50%; background: #f2f2f2; display: grid; place-items: center; flex: none; }
+.lk-pt b { display: block; font-weight: 500; font-size: 17px; line-height: 24px; color: #1d1d1d; }
+.lk-pt > div > span { display: block; color: #5f6368; font-size: 15px; line-height: 22px; }
+.lk-pt > div > span.lk-dark { color: #1d1d1d; font-size: 16px; line-height: 24px; }
+.lk-foot { margin-top: auto; display: flex; flex-direction: column; gap: 14px; align-items: stretch; text-align: center; }
+.lk-fine { margin: 0; font-size: 13px; line-height: 18px; color: #5f6368; }
+.lk-fine button { text-decoration: underline; color: #5f6368; }
+.lk-btn { height: 56px; border-radius: 28px; background: #1d1d1d; color: #fff; font-size: 17px; font-weight: 500; }
+.lk-btn:hover { background: #000; }
+.lk-btn:disabled { background: #c4c4c4; cursor: not-allowed; }
+.lk-sub { align-self: center; font-size: 13px; text-decoration: underline; color: #3c4043; }
+.lk-plain { align-self: center; font-size: 17px; font-weight: 500; color: #1d1d1d; padding: 6px 12px; border-radius: 8px; }
+.lk-plain:hover { background: #f2f2f2; }
+.lk-bankicon { align-self: center; width: 72px; height: 72px; border-radius: 16px; border: 1px solid var(--border); display: grid; place-items: center; overflow: hidden; background: #fff; flex: none; }
+.lk-bankicon img { width: 66px; height: auto; }
+.lk-list { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #f2f2f2; flex: none; }
+.lk-row { display: flex; align-items: center; gap: 12px; padding: 14px 18px; text-align: left; border-bottom: 1px solid #e3e3e3; }
+.lk-row:last-child { border-bottom: 0; }
+.lk-row:hover { background: #eaeaea; }
+.lk-row .t { flex: 1; min-width: 0; }
+.lk-row b { display: block; font-weight: 500; font-size: 17px; line-height: 24px; color: #1d1d1d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lk-row .n { color: #6b6b6b; font-size: 15px; line-height: 20px; }
+.lk-row .ck { width: 20px; height: 20px; display: grid; place-items: center; flex: none; }
+.lk-field { background: #f2f2f2; border: 2px solid transparent; border-radius: 12px; padding: 8px 16px; display: flex; flex-direction: column; text-align: left; }
+.lk-field:focus-within { background: #fff; border-color: #1d1d1d; }
+.lk-field.bad { border-color: var(--danger); background: #fff; }
+.lk-field label { font-size: 13px; line-height: 18px; color: #5f6368; }
+.lk-field input { border: 0; outline: 0; background: transparent; font: 17px/24px var(--font); color: #1d1d1d; padding: 0; width: 100%; }
+.lk-phone { flex-direction: row; align-items: center; gap: 12px; padding-left: 8px; }
+.lk-cc { display: flex; align-items: center; gap: 8px; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, .15); font-size: 15px; flex: none; }
+.lk-err { margin: -12px 0 0; font-size: 13px; line-height: 18px; color: var(--danger); text-align: left; }
+.lk-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+.lk-center h2 { margin: 0; font-size: 26px; line-height: 32px; font-weight: 600; color: #1d1d1d; }
+.lk-center p { margin: 0; color: #5f6368; font-size: 16px; line-height: 24px; max-width: 260px; }
+.lk-ok { width: 64px; height: 64px; border-radius: 50%; background: #00D66F; display: grid; place-items: center; margin-bottom: 4px; }
+/* Inline payout account chooser */
+.chooser { display: flex; flex-direction: column; gap: 16px; }
+.chooser-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.chooser-t { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; color: var(--heading); }
+.accts { display: flex; flex-direction: column; gap: 12px; }
+@media (max-width: 640px) { .lk { height: calc(100vh - 32px); } }
+
 /* Statement preview */
 .stmt { position: relative; padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 8px; background: url("assets/icons/stmt-bg.svg") no-repeat 0 0 / 100% 100%; font: 11px/16px var(--font-mono); color: var(--body); margin-top: 4px; }
 .stmt .row { display: flex; align-items: center; gap: 12px; }
@@ -211,7 +266,7 @@ img { display: block; max-width: none; }
 .rrow { display: flex; flex-wrap: wrap; gap: 0 12px; }
 .rrow .k { width: 150px; color: var(--body); }
 .rrow .v { flex: 1 0 0; min-width: min(296px, 100%); color: var(--heading); overflow-wrap: anywhere; }
-.payout { display: flex; gap: 16px; align-items: flex-start; }
+.payout, .rcard.payout { display: flex; flex-direction: row; gap: 16px; align-items: flex-start; }
 .payout .logo40 { width: 40px; height: 40px; border-radius: 4px; overflow: hidden; flex: none; border: 1px solid var(--border); display: grid; place-items: center; background: var(--page); }
 .payout .logo40.flush { border: 0; }
 .payout .logo40 img.bank-mini { width: 38px; height: auto; }
@@ -325,7 +380,7 @@ const defaults = () => ({
   addrCountry: 'United States', street: '1250 5th Ave S', unit: 'Suite 200', city: 'Naples', state: 'FL', zip: '34102', phone: '(239) 555-0147',
   industry: 'Restaurants and nightlife', website: 'www.naplesstore.com',
   description: 'Full-service restaurant and bar in downtown Naples. Guests pay for dine-in meals, drinks and takeout orders at the counter or at the table.',
-  bank: 'wellsfargo', bankAcct: 'Everyday Checking', bankLast4: '1234',
+  bank: null, linked: [], payoutAcct: 0,
   manual: false, holder: 'John Parker', routing: '110000000', account: '000123451234', account2: '000123451234',
   descriptor: 'NAPLES STORE', supportPhone: '(239) 555-0100',
 });
@@ -394,6 +449,15 @@ const embedded = (inner) => `
     ${legal}
   </section>`;
 
+/* ---------- Link popup ---------- */
+const LK_ACCTS = [{ name: 'Everyday Checking', last4: '1234', bal: '$12,480.22' }, { name: 'Business Savings', last4: '8890', bal: '$40,113.09' }, { name: 'Payroll Checking', last4: '4471', bal: '$3,206.55' }];
+const LK_CHEV = (s, c) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 5.2 15.4 12l-6.8 6.8" fill="none" stroke="${c}" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LK_MARK = `<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#00D66F"/><path d="M9.6 7 14.6 12l-5 5" fill="none" stroke="#011E0F" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const SVG_CHAIN = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1d1d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg>';
+const SVG_LOCK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1d1d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1" fill="#1d1d1d"/></svg>';
+const SVG_CHECK = (c, s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"/></svg>`;
+const SVG_FLAG = `<svg width="24" height="16" viewBox="0 0 24 16" aria-hidden="true"><rect width="24" height="16" rx="2" fill="#fff"/>${[0, 2, 4, 6, 8, 10, 12].map((i) => `<rect y="${(i * 16 / 13).toFixed(2)}" width="24" height="${(16 / 13).toFixed(2)}" fill="#B22234"/>`).join('')}<rect width="10.5" height="8.6" fill="#3C3B6E"/></svg>`;
+
 /* ---------- Screens ---------- */
 const screens = {
   payments: () => `
@@ -455,32 +519,39 @@ const screens = {
 
   payout: () => {
     const d = S.d;
-    const tiles = BANKS.map((b) => `<button class="bank${!d.manual && d.bank === b.id ? ' sel-on' : ''}" data-bank="${b.id}" data-name="${esc(b.name.toLowerCase())}" aria-label="${esc(b.name)}" aria-pressed="${!d.manual && d.bank === b.id}">
-        <img src="${BANKS_DIR}bank-${b.id}.svg" width="88" height="40" alt="">
-        ${!d.manual && d.bank === b.id ? '<span class="chk"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5.2 4 7.6 8.6 2.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : ''}
-      </button>`).join('');
     const bank = BANKS.find((b) => b.id === d.bank);
-    const selected = !d.manual && bank ? `<div class="selected-acct">${ic('stmt-bank', 14)}<div class="t"><b style="color:var(--heading)">${esc(bank.name)}</b> · ${esc(d.bankAcct)} <span class="mono">••••${esc(d.bankLast4)}</span></div><button class="edit" data-bank="${bank.id}">Change</button></div>` : '';
-    const manual = d.manual ? `
+    let body;
+    if (d.manual) {
+      body = `
       <div class="manual">
         <div class="manual-head"><span class="lbl-t">Enter bank details</span><button class="linkbtn" data-act="manual-off">Search for your bank instead</button></div>
         <div class="field"><label class="lbl-t" for="f-holder">Account holder name</label>${input('holder', { auto: 'name' })}${errP('holder')}</div>
         <div class="field"><label class="lbl-t" for="f-routing">Routing number</label>${input('routing', { ph: '110000000', mode: 'numeric' })}${errP('routing')}</div>
         <div class="field"><label class="lbl-t" for="f-account">Account number</label>${input('account', { ph: '000123456789', mode: 'numeric' })}${errP('account')}</div>
         <div class="field"><label class="lbl-t" for="f-account2">Confirm account number</label>${input('account2', { ph: '000123456789', mode: 'numeric' })}${errP('account2')}</div>
-      </div>` : '';
+      </div>`;
+    } else if (bank && d.linked.length) {
+      body = `
+      <div class="chooser">
+        <div class="chooser-head"><img src="${BANKS_DIR}bank-${bank.id}.svg" width="88" height="40" alt="${esc(bank.name)}"><button class="linkbtn" data-act="bank-reset">Choose a different bank</button></div>
+        <h2 class="chooser-t" id="acct-t">Choose the account for payouts</h2>
+        <div class="accts" role="radiogroup" aria-labelledby="acct-t">
+          ${d.linked.map((a, i) => `<label class="acct"><input type="radio" name="payoutAcct" value="${i}"${i === d.payoutAcct ? ' checked' : ''}><span class="t"><b>${esc(a.name)}</b><span class="mono">••••${a.last4}</span></span><span>${a.bal}</span></label>`).join('')}
+        </div>
+        <p class="secure">Linga connects to your bank over an encrypted connection. We never see or store your bank sign-in details.</p>
+      </div>
+      <button class="linkbtn" data-act="manual-on">Enter bank details manually</button>`;
+    } else {
+      const tiles = BANKS.map((b) => `<button class="bank" data-bank="${b.id}" data-name="${esc(b.name.toLowerCase())}" aria-label="${esc(b.name)}"><img src="${BANKS_DIR}bank-${b.id}.svg" width="88" height="40" alt=""></button>`).join('');
+      body = `
+      <label class="bank-search">${ic('search', 12)}<input id="f-banksearch" type="search" placeholder="Search for your bank" aria-label="Search for your bank"></label>
+      <div class="banks" id="bank-grid">${tiles}<p class="bank-empty" id="bank-empty" hidden>No banks match your search. Enter your bank details manually.</p></div>
+      <button class="linkbtn" data-act="manual-on">Enter bank details manually</button>`;
+    }
     return embedded(`
     <div class="form">
       ${obHeader('payout', 'Select an account for payouts', 'Earnings you receive will be sent to this account.')}
-      <div class="field" style="gap:16px">
-        ${d.manual ? '' : `
-        <label class="bank-search"><span class="sr" hidden>Search for your bank</span>${ic('search', 12)}<input id="f-banksearch" type="search" placeholder="Search for your bank" aria-label="Search for your bank"></label>
-        <div class="banks" id="bank-grid">${tiles}<p class="bank-empty" id="bank-empty" hidden>No banks match your search. Enter your bank details manually.</p></div>
-        ${selected}
-        <button class="linkbtn" data-act="manual-on">Enter bank details manually</button>`}
-        ${manual}
-        ${errP('payout')}
-      </div>
+      <div class="field" style="gap:16px">${body}${errP('payout')}</div>
       ${footer()}
     </div>`);
   },
@@ -507,11 +578,13 @@ const screens = {
     const addr = `${esc(d.street)}${d.unit ? ', ' + esc(d.unit) : ''}<br>${esc(d.city)}, ${esc(d.state)} ${esc(d.zip)} US`;
     const bizName = d.businessType === 'Individual' ? `${esc(d.firstName)} ${esc(d.lastName)}` : 'Naples Store, LLC';
     const bank = BANKS.find((b) => b.id === d.bank);
+    const acct = d.linked[d.payoutAcct];
     const payout = d.manual
-      ? { logo: `<div class="logo40">${ic('stmt-bank', 18)}</div>`, name: 'Bank account', num: `⑆ ${esc(d.routing)} ⑆ ••••${esc(String(d.account).slice(-4))}` }
-      : d.bank === 'wellsfargo'
-        ? { logo: `<div class="logo40 flush">${ic('wellsfargo-square', 40)}</div>`, name: 'Wells Fargo', num: `⑆ 110000000 ⑆ ••••${esc(d.bankLast4)}` }
-        : { logo: `<div class="logo40"><img class="bank-mini" src="${BANKS_DIR}bank-${bank.id}.svg" width="38" alt=""></div>`, name: esc(bank.name), num: `⑆ 110000000 ⑆ ••••${esc(d.bankLast4)}` };
+      ? { logo: `<div class="logo40">${ic('stmt-bank', 18)}</div>`, name: 'Bank account', num: `⑆ ${esc(d.routing)} ⑆ ••••${esc(String(d.account).slice(-4))}`, sub: 'USD, Instant-eligible' }
+      : bank && acct
+        ? { logo: d.bank === 'wellsfargo' ? `<div class="logo40 flush">${ic('wellsfargo-square', 40)}</div>` : `<div class="logo40"><img class="bank-mini" src="${BANKS_DIR}bank-${bank.id}.svg" width="38" alt=""></div>`,
+            name: esc(bank.name), num: `⑆ 110000000 ⑆ ••••${esc(acct.last4)}`, sub: `${esc(acct.name)} · USD, Instant-eligible` }
+        : null;
     const banner = S.submitError ? `<div class="banner" role="alert"><div><b>We couldn’t submit your details.</b> ${esc(S.submitError)}</div></div>` : '';
     return embedded(`
     <div class="form tight">
@@ -543,14 +616,14 @@ const screens = {
           <div class="rrow"><span class="k">Other information provided</span><span class="v">Phone</span></div>
         </div></div>
       <div class="sec"><div class="sec-title"><p>Payout details</p></div>
-        <div class="rcard payout">
+        ${payout ? `<div class="rcard payout">
           ${payout.logo}
           <div class="c">
             <div class="tl"><p>${payout.name}</p><span class="pill">Default</span><button class="more-btn" data-edit="payout" aria-label="Change payout account">${ic('more', 16)}</button></div>
             <div class="mono" style="font-size:14px">${payout.num}</div>
-            <div>USD, Instant-eligible</div>
+            <div>${payout.sub}</div>
           </div>
-        </div>
+        </div>` : '<div class="rcard"><p style="margin:0">No payout account yet. Add a bank account to receive payouts.</p></div>'}
         <div class="btns">
           <button class="btn secondary" data-edit="payout">Add bank account</button>
           <button class="btn secondary" data-toast="Debit card payouts aren’t part of this prototype yet.">Add debit card</button>
@@ -642,7 +715,7 @@ function validate(step) {
       if (!/^\d{9}$/.test(d.routing.trim())) e.routing = 'Routing numbers have 9 digits.';
       if (!/^\d{4,17}$/.test(d.account.trim())) e.account = 'Account numbers have 4 to 17 digits.';
       else if (d.account.trim() !== d.account2.trim()) e.account2 = 'The account numbers don’t match.';
-    } else if (!d.bank) e.payout = 'Select your bank, or enter your bank details manually.';
+    } else if (!d.bank || !d.linked.length) e.payout = 'Select your bank, or enter your bank details manually.';
   }
   if (step === 'public') {
     const s = d.descriptor.trim();
@@ -763,21 +836,58 @@ function renderLayer() {
       <div class="dialog-foot"><button class="lg-btn out" data-act="modal-close" id="keep-btn">Keep editing</button><button class="lg-btn fill" data-act="leave">Leave form</button></div>
     </div></div>`;
   }
-  if (m && m.type === 'bank') {
+  if (m && m.type === 'link') {
     const b = BANKS.find((x) => x.id === m.bank);
-    const accts = [['Everyday Checking', '1234', '$12,480.22'], ['Business Savings', '8890', '$40,113.09']];
-    const body = m.phase === 'connecting'
-      ? `<div class="connecting"><span class="spinner dark" style="width:28px;height:28px;border-width:3px;margin:0"></span><b style="color:var(--heading)">Connecting to ${esc(b.name)}…</b><span class="secure">This takes a few seconds.</span></div>`
-      : `<div class="connect-body">
-          <img src="${BANKS_DIR}bank-${b.id}.svg" width="88" height="40" alt="${esc(b.name)}">
-          <h3>Choose the account for payouts</h3>
-          ${accts.map(([n, l, bal], i) => `<label class="acct"><input type="radio" name="acct" value="${i}"${i === (m.acct || 0) ? ' checked' : ''}><span class="t"><b>${n}</b><span class="mono">••••${l}</span></span><span>${bal}</span></label>`).join('')}
-          <p class="secure">Linga connects to your bank over an encrypted connection. We never see or store your bank sign-in details.</p>
-          <div class="btns"><button class="btn primary" data-act="bank-connect">Connect account</button><button class="btn secondary" data-act="modal-close">Cancel</button></div>
-        </div>`;
-    html = `<div class="scrim" data-act="scrim"><div class="connect" role="dialog" aria-modal="true" aria-label="Connect ${esc(b.name)}">
-      <div class="connect-head"><span class="brandmini">${ic('logo', 60, 24)} Link your bank</span><button class="xbtn" style="width:32px;height:32px" data-act="modal-close" aria-label="Close">${ic('close', 20)}</button></div>
-      ${body}</div></div>`;
+    let inner = '';
+    if (m.phase === 'consent') inner = `
+      <div class="lk-pair"><img src="${ICON}linga-app.png" width="72" height="72" alt="Linga"><span class="lk-sq">${LK_CHEV(34, '#011E0F')}</span></div>
+      <h2 class="lk-title" id="lk-t">Linga uses Link to connect your accounts</h2>
+      <div class="lk-points">
+        <div class="lk-pt"><span class="lk-ico">${SVG_CHAIN}</span><div><b>Fast and simple</b><span>Connect your account in seconds.</span></div></div>
+        <div class="lk-pt"><span class="lk-ico">${SVG_LOCK}</span><div><b>Data is encrypted</b><span>You can disconnect your account at any time.</span></div></div>
+      </div>
+      <div class="lk-foot">
+        <p class="lk-fine">By continuing, you agree to Link’s<br><button data-toast="Link’s Terms and Privacy Policy open in a new tab in the live product.">Terms and Privacy Policy</button>.</p>
+        <button class="lk-btn" data-act="lk-agree" id="lk-first">Agree and continue</button>
+        <button class="lk-sub" data-act="lk-manual">Manually verify instead</button>
+      </div>`;
+    if (m.phase === 'loading' || m.phase === 'saving') inner = `
+      <div class="lk-center"><span class="spinner dark" style="width:40px;height:40px;border-width:4px;margin:0;border-color:#e6e6e6;border-top-color:#00D66F"></span>
+      <p>${m.phase === 'loading' ? `Connecting to ${esc(b.name)}…` : 'Saving your account…'}</p></div>`;
+    if (m.phase === 'accounts') {
+      const n = m.sel.filter(Boolean).length;
+      inner = `
+      <div class="lk-bankicon"><img src="${BANKS_DIR}bank-${b.id}.svg" width="66" alt="${esc(b.name)}"></div>
+      <h2 class="lk-title" id="lk-t">Select accounts</h2>
+      <div class="lk-list">${LK_ACCTS.map((a, i) => `<button class="lk-row" role="checkbox" aria-checked="${m.sel[i]}" data-lkacct="${i}"><span class="t"><b>${esc(a.name)}</b><span class="n">••••${a.last4}</span></span><span class="ck">${m.sel[i] ? SVG_CHECK('#1d1d1d') : ''}</span></button>`).join('')}</div>
+      <div class="lk-foot">
+        <p class="lk-fine">Linga can access account details. <button data-toast="Linga only reads account names, numbers and balances to set up payouts.">Learn more</button></p>
+        <button class="lk-btn" data-act="lk-connect" id="lk-first"${n ? '' : ' disabled'}>${n > 1 ? 'Connect accounts' : 'Connect account'}</button>
+      </div>`;
+    }
+    if (m.phase === 'save') inner = `
+      <h2 class="lk-title" id="lk-t">Save account with Link</h2>
+      <div class="lk-points">
+        <div class="lk-pt"><span class="lk-ico">${SVG_CHAIN}</span><div><span class="lk-dark">Connect your account faster everywhere Link is accepted.</span></div></div>
+        <div class="lk-pt"><span class="lk-ico">${SVG_LOCK}</span><div><span class="lk-dark">Link saves and encrypts your data from account setup, including bank and personal details.</span></div></div>
+      </div>
+      <div class="lk-field${m.err.email ? ' bad' : ''}"><label for="lk-email">Email address</label><input id="lk-email" data-lk="email" type="email" autocomplete="email" value="${esc(m.email)}"></div>
+      ${m.err.email ? `<p class="lk-err" role="alert">${m.err.email}</p>` : ''}
+      <div class="lk-field lk-phone${m.err.phone ? ' bad' : ''}"><span class="lk-cc">${SVG_FLAG} +1</span><span style="display:flex;flex-direction:column;flex:1;min-width:0"><label for="lk-phone">Phone number</label><input id="lk-phone" data-lk="phone" data-fmt="phone" type="tel" autocomplete="tel-national" value="${esc(m.phone)}"></span></div>
+      ${m.err.phone ? `<p class="lk-err" role="alert">${m.err.phone}</p>` : ''}
+      <div class="lk-foot">
+        <p class="lk-fine">By saving your account, you agree to the<br>Link <button data-toast="Link’s Terms and Privacy Policy open in a new tab in the live product.">Terms and Privacy Policy</button></p>
+        <button class="lk-btn" data-act="lk-save" id="lk-first">Save with Link</button>
+        <button class="lk-plain" data-act="lk-skip">Finish without saving</button>
+      </div>`;
+    if (m.phase === 'success') inner = `
+      <div class="lk-center"><span class="lk-ok">${SVG_CHECK('#011E0F', 28)}</span><h2 id="lk-t">Success</h2>
+      <p>${m.saved ? 'Your accounts are connected and saved with Link.' : 'Your accounts are connected.'}</p></div>
+      <div class="lk-foot"><button class="lk-btn" data-act="lk-done" id="lk-first">Done</button></div>`;
+    const busy = m.phase === 'loading' || m.phase === 'saving';
+    html = `<div class="scrim" data-act="scrim"><div class="lk" role="dialog" aria-modal="true" aria-labelledby="lk-t" aria-busy="${busy}">
+      <div class="lk-head"><span class="lk-logo">${LK_MARK}<span>link</span></span>${busy || m.phase === 'success' ? '' : `<button class="lk-x" data-act="modal-close" aria-label="Close">${ic('close', 22)}</button>`}</div>
+      <div class="lk-body">${inner}</div></div></div>`;
   }
   const r = route();
   const inForm = Object.keys(STEP_FIELDS).includes(r);
@@ -794,6 +904,7 @@ function renderLayer() {
   if (S.toast) html += `<div class="toast" role="status">${esc(S.toast)}</div>`;
   layer.innerHTML = html;
   if (m && m.type === 'leave') document.getElementById('keep-btn')?.focus();
+  if (m && m.type === 'link' && m.focus) { m.focus = false; document.getElementById('lk-first')?.focus(); }
 }
 
 let toastTimer;
@@ -844,10 +955,11 @@ document.addEventListener('click', (ev) => {
   if (t.dataset.goto) { go(t.dataset.goto); return; }
   if (t.dataset.jump) { S.protoOpen = false; go(t.dataset.jump); return; }
   if (t.dataset.edit) { S.returnToReview = true; go(t.dataset.edit); return; }
-  if (t.dataset.bank) { S.modal = { type: 'bank', bank: t.dataset.bank, phase: 'select', acct: 0 }; renderLayer(); return; }
+  if (t.dataset.bank) { S.modal = { type: 'link', bank: t.dataset.bank, phase: 'consent', sel: LK_ACCTS.map(() => true), email: S.d.email, phone: S.d.phone, err: {}, saved: false, focus: true }; renderLayer(); return; }
+  if (t.dataset.lkacct) { const m = S.modal; m.sel[+t.dataset.lkacct] = !m.sel[+t.dataset.lkacct]; renderLayer(); document.querySelector(`[data-lkacct="${t.dataset.lkacct}"]`)?.focus(); return; }
 
   switch (act) {
-    case 'scrim': if (ev.target === t) { S.modal = null; renderLayer(); } break;
+    case 'scrim': if (ev.target === t && !(S.modal && ['loading', 'saving'].includes(S.modal.phase))) { S.modal = null; renderLayer(); } break;
     case 'continue': next(route()); break;
     case 'back': {
       const i = FLOW.indexOf(route());
@@ -863,25 +975,38 @@ document.addEventListener('click', (ev) => {
     case 'nav-payments': go(S.completed ? 'manage' : 'payments'); break;
     case 'manual-on': S.d.manual = true; S.errors = {}; render(); document.getElementById('f-holder')?.focus(); break;
     case 'manual-off': S.d.manual = false; S.errors = {}; render(); break;
-    case 'bank-connect': {
-      const sel = document.querySelector('input[name="acct"]:checked');
-      const i = sel ? +sel.value : 0;
-      const m = S.modal; m.phase = 'connecting'; renderLayer();
-      setTimeout(() => {
-        S.d.bank = m.bank; S.d.manual = false;
-        S.d.bankAcct = i ? 'Business Savings' : 'Everyday Checking'; S.d.bankLast4 = i ? '8890' : '1234';
-        S.modal = null; delete S.errors.payout; render();
-        toast(`${BANKS.find((b) => b.id === m.bank).name} account connected.`);
-      }, 1100);
+    case 'lk-agree': {
+      const m = S.modal; m.phase = 'loading'; renderLayer();
+      setTimeout(() => { if (S.modal === m) { m.phase = 'accounts'; m.focus = true; renderLayer(); } }, 1100);
       break;
     }
+    case 'lk-manual': S.modal = null; S.d.manual = true; S.errors = {}; render(); document.getElementById('f-holder')?.focus(); break;
+    case 'lk-connect': { const m = S.modal; if (m.sel.some(Boolean)) { m.phase = 'save'; m.focus = true; renderLayer(); } break; }
+    case 'lk-save': {
+      const m = S.modal; m.err = {};
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m.email.trim())) m.err.email = 'Enter a valid email address, like name@example.com.';
+      if (digits(m.phone).length !== 10) m.err.phone = 'Enter a 10-digit US phone number.';
+      if (Object.keys(m.err).length) { renderLayer(); document.querySelector('.lk-field.bad input')?.focus(); break; }
+      m.phase = 'saving'; renderLayer();
+      setTimeout(() => { if (S.modal === m) { m.phase = 'success'; m.saved = true; m.focus = true; renderLayer(); } }, 900);
+      break;
+    }
+    case 'lk-skip': { const m = S.modal; m.phase = 'success'; m.saved = false; m.focus = true; renderLayer(); break; }
+    case 'lk-done': {
+      const m = S.modal;
+      S.d.bank = m.bank; S.d.manual = false; S.d.linked = LK_ACCTS.filter((_, i) => m.sel[i]); S.d.payoutAcct = 0;
+      S.modal = null; delete S.errors.payout; render();
+      document.querySelector('input[name="payoutAcct"]')?.focus();
+      break;
+    }
+    case 'bank-reset': S.d.bank = null; S.d.linked = []; S.d.payoutAcct = 0; render(); break;
     case 'submit': if (!S.submitting) submit(); break;
     case 'proto': S.protoOpen = !S.protoOpen; renderLayer(); break;
     case 'restart': S.protoOpen = false; S.d = defaults(); S.done = new Set(); S.completed = false; go('payments'); break;
     case 'clear-step': {
       const r = route();
       (STEP_FIELDS[r] || []).forEach((k) => { S.d[k] = k === 'bank' ? null : ''; });
-      if (r === 'payout') S.d.manual = false;
+      if (r === 'payout') { S.d.manual = false; S.d.linked = []; }
       S.protoOpen = false; S.errors = {}; render(); toast('Fields cleared. Press Continue to see the error messages.');
       break;
     }
@@ -890,12 +1015,13 @@ document.addEventListener('click', (ev) => {
 
 document.addEventListener('change', (ev) => {
   if (ev.target.id === 'fail-next') { S.failNext = ev.target.checked; return; }
+  if (ev.target.name === 'payoutAcct') { S.d.payoutAcct = +ev.target.value; return; }
   if (ev.target.dataset.k && ev.target.tagName === 'SELECT') setField(ev.target);
 });
 document.addEventListener('input', (ev) => {
   const el = ev.target;
   if (el.id === 'f-banksearch') { filterBanks(); return; }
-  if (!el.dataset.k) return;
+  if (!el.dataset.k && !el.dataset.lk) return;
   if (el.dataset.fmt === 'phone') {
     const v = digits(el.value).slice(0, 10);
     el.value = v.length > 6 ? `(${v.slice(0, 3)}) ${v.slice(3, 6)}-${v.slice(6)}` : v.length > 3 ? `(${v.slice(0, 3)}) ${v.slice(3)}` : v;
@@ -904,6 +1030,7 @@ document.addEventListener('input', (ev) => {
     const v = digits(el.value).slice(0, 8);
     el.value = [v.slice(0, 2), v.slice(2, 4), v.slice(4)].filter(Boolean).join(' / ');
   }
+  if (el.dataset.lk) { S.modal[el.dataset.lk] = el.value; if (S.modal.err[el.dataset.lk]) { delete S.modal.err[el.dataset.lk]; el.closest('.lk-field')?.classList.remove('bad'); el.closest('.lk-field')?.nextElementSibling?.matches('.lk-err') && el.closest('.lk-field').nextElementSibling.remove(); } return; }
   setField(el);
   if (el.dataset.k === 'descriptor') { const live = document.getElementById('stmt-live'); if (live) live.textContent = el.value || 'Example'; }
 });
@@ -918,7 +1045,7 @@ function setField(el) {
 }
 document.addEventListener('keydown', (ev) => {
   if (ev.key !== 'Escape') return;
-  if (S.modal && S.modal.phase !== 'connecting') { S.modal = null; renderLayer(); }
+  if (S.modal && !['loading', 'saving'].includes(S.modal.phase)) { S.modal = null; renderLayer(); }
   else if (S.progressOpen) { S.progressOpen = false; render(); }
   else if (S.protoOpen) { S.protoOpen = false; renderLayer(); }
 });
