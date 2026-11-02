@@ -692,6 +692,7 @@ const LABEL = { 'business-type': 'Business type', personal: 'Personal details', 
 const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'payouts', 'reports', 'account'];
 const MANAGE = ['manage', 'payouts', 'reports', 'account'];
 const isManage = () => MANAGE.includes(route());
+const showSub = () => isManage() || route() === 'done';
 const FS_ROUTES = ['payments', 'account', 'creating', ...FLOW, 'done'];
 const MODE = () => (location.hash.startsWith('#fs-') ? 'fs' : 'bo');
 const route = () => {
@@ -1651,7 +1652,7 @@ function mgAction(act, t) {
 
 const NAV_TOP = [['nav-enterprise', 'Enterprise'], ['nav-stores', 'Stores']];
 const NAV_STORE = [['nav-home', 'Home'], ['nav-products', 'Products/Items', 1], ['nav-inventory', 'Inventory', 1], ['nav-users', 'User Management', 1], ['nav-customers', 'Customers', 1], ['nav-marketing', 'Marketing', 1], ['nav-integration', 'Integration Hub'], ['nav-order', 'Order Connect', 1], ['nav-reports', 'Reports', 1], ['nav-payments', 'Payments']];
-const mi = ([icon, label, chev], active) => `<button class="mi${active ? ' active' : ''}" ${label === 'Payments' ? `data-act="nav-payments"${S.completed || isManage() ? ` aria-expanded="${S.paySub}"` : ''}` : `data-toast="${label} isn’t part of this prototype. Use Payments."`} title="${label}"${active ? ' aria-current="page"' : ''}>${ic(icon, 20)}<span class="lbl">${label}</span>${chev ? ic('chevron-forward', 20, 20, 'chev') : label === 'Payments' && (S.completed || isManage()) ? ic('chevron-forward', 20, 20, 'chev' + (S.paySub ? ' open' : '')) : ''}</button>`;
+const mi = ([icon, label, chev], active) => `<button class="mi${active ? ' active' : ''}" ${label === 'Payments' ? `data-act="nav-payments"${showSub() ? ` aria-expanded="${S.paySub}"` : ''}` : `data-toast="${label} isn’t part of this prototype. Use Payments."`} title="${label}"${active ? ' aria-current="page"' : ''}>${ic(icon, 20)}<span class="lbl">${label}</span>${chev ? ic('chevron-forward', 20, 20, 'chev') : label === 'Payments' && showSub() ? ic('chevron-forward', 20, 20, 'chev' + (S.paySub ? ' open' : '')) : ''}</button>`;
 
 function shell(content) {
   return `
@@ -1674,7 +1675,7 @@ function shell(content) {
       <nav class="menu" aria-label="Back office">
         <div class="menu-group">${NAV_TOP.map((n) => mi(n)).join('')}</div>
         <div class="menu-store">Naples store</div>
-        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && !isManage())).join('')}${(S.completed || isManage()) && S.paySub ? `<div class="subs">${[['Transactions', 'manage'], ['Payouts', 'payouts'], ['Reports', 'reports'], ['Account', 'account']].map(([x, to]) => { const on = to === route(); return `<button class="smi${on ? ' active' : ''}"${on ? ' aria-current="page"' : to ? ` data-act="sub-nav" data-to="${to}"` : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`; }).join('')}</div>` : ''}</div>
+        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && !isManage())).join('')}${showSub() && S.paySub ? `<div class="subs">${[['Transactions', 'manage'], ['Payouts', 'payouts'], ['Reports', 'reports'], ['Account', 'account']].map(([x, to]) => { const on = to === route(); return `<button class="smi${on ? ' active' : ''}"${on ? ' aria-current="page"' : to ? ` data-act="sub-nav" data-to="${to}"` : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`; }).join('')}</div>` : ''}</div>
         <div class="menu-sep"><div class="menu-group">${mi(['nav-settings', 'Settings'])}</div></div>
         <div class="menu-group">${mi(['nav-shop', 'Shop'])}</div>
       </nav>
@@ -1943,7 +1944,7 @@ document.addEventListener('click', (ev) => {
     case 'collapse':
       if (window.matchMedia('(max-width: 900px)').matches) S.menuOpen = !S.menuOpen; else S.collapsed = !S.collapsed;
       render(); break;
-    case 'nav-payments': if (S.completed || isManage()) { S.paySub = !S.paySub; render(); document.querySelector('.mi[data-act=nav-payments]')?.focus(); } else go('payments'); break;
+    case 'nav-payments': if (showSub()) { S.paySub = !S.paySub; render(); document.querySelector('.mi[data-act=nav-payments]')?.focus(); } else go(S.completed ? 'manage' : 'payments'); break;
     case 'manual-on': S.d.manual = true; S.errors = {}; render(); document.getElementById('f-holder')?.focus(); break;
     case 'manual-off': S.d.manual = false; S.errors = {}; render(); break;
     case 'lk-agree': {
