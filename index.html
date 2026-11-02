@@ -252,6 +252,28 @@ img { display: block; max-width: none; }
 .smi:hover { background: var(--depression); }
 .smi.active { background: var(--selected); }
 .shell.collapsed .subs { display: none; }
+.banner-box { flex-direction: row; align-items: center; gap: 16px; flex-wrap: wrap; }
+.bb-t { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 4px; }
+.bb-t b { font-weight: 600; font-size: 16px; line-height: 24px; color: var(--heading); }
+.bb-t span { font-size: 14px; line-height: 20px; color: var(--body); }
+.chip.on { display: inline-flex; align-items: center; padding: 0; }
+.chip-x { display: grid; place-items: center; width: 24px; height: 28px; padding-left: 4px; }
+.chip-x img { opacity: .8; }
+.chip-l { display: inline-flex; align-items: center; gap: 0; padding: 3px 8px 3px 2px; font-weight: 600; color: var(--heading); }
+.chip-v { margin-left: 6px; padding-left: 6px; border-left: 1px solid #cfe3ec; color: var(--action-text); }
+.tbl.sum th, .tbl.sum td { padding-right: 12px; }
+.tbl.sum th:last-child, .tbl.sum td:last-child { padding-right: 0; }
+.tbl.sum th:first-child, .tbl.sum td:first-child { width: 100%; }
+.tbl.sum tr.tot td { border-bottom: 1px solid var(--border); }
+.ptx { list-style: none; margin: 0; padding: 0; }
+.ptx li { border-bottom: 1px solid var(--border); }
+.ptx button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 0; text-align: left; }
+.ptx button:hover { background: #f7f9fd; }
+.ptx button > span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ptx b { font-weight: 600; color: var(--heading); }
+.ptx small { font-size: 14px; color: var(--body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lnkc.back { align-self: flex-start; font-size: 14px; }
+.kv img { display: inline-block; vertical-align: -2px; margin-right: 6px; }
 /* Manage modals */
 .scrim.mg { place-items: start center; overflow-y: auto; padding-block: 40px; }
 .mdl { width: 496px; max-width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, .14), 0 2px 6px rgba(0, 0, 0, .08); }
@@ -591,7 +613,7 @@ const S = {
 
 const FLOW = ['business-type', 'personal', 'business', 'payout', 'public', 'review'];
 const LABEL = { 'business-type': 'Business type', personal: 'Personal details', business: 'Business details', payout: 'Payout details', public: 'Public details', review: 'Review and submit' };
-const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage'];
+const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'payouts'];
 const FS_ROUTES = ['payments', 'account', 'creating', ...FLOW, 'done'];
 const MODE = () => (location.hash.startsWith('#fs-') ? 'fs' : 'bo');
 const route = () => {
@@ -865,6 +887,7 @@ const screens = {
     </section>`,
 
   manage: () => manageView(),
+  payouts: () => payoutsView(),
 };
 
 function prettyDob(v) {
@@ -966,57 +989,76 @@ function mkData() {
   tx[2].dispute = disputes[0]; tx[11].dispute = disputes[1];
   return { tx, disputes };
 }
-const mgDefaults = () => ({ tab: 'all', page: 0, pop: null, filters: { all: {}, disputes: {} }, bal: { onWay: 800, upcoming: 800, available: 3400, reserve: 1000 }, ...mkData() });
-const BADGE = { Paid: 'ok', Succeeded: 'ok', 'Dispute won': 'ok', Refunded: '', Disputed: '', 'In review': '', 'Action required': 'warn', 'Deadline missed': 'warn', 'Dispute lost': 'bad', Accepted: 'bad', 'Partially refunded': '' };
+const mgDefaults = () => ({ tab: 'all', pg: { all: 0, disputes: 0, payouts: 0 }, pop: null, filters: { all: {}, disputes: {}, payouts: { Status: ['Paid'] } }, payouts: mkPayouts(), bal: { onWay: 800, upcoming: 800, available: 3400, reserve: 1000 }, ...mkData() });
+const BADGE = { 'In transit': '', Failed: 'bad', Canceled: '', Paid: 'ok', Succeeded: 'ok', 'Dispute won': 'ok', Refunded: '', Disputed: '', 'In review': '', 'Action required': 'warn', 'Deadline missed': 'warn', 'Dispute lost': 'bad', Accepted: 'bad', 'Partially refunded': '' };
 const badge = (s) => `<span class="pill ${BADGE[s] ?? ''}">${esc(s)}</span>`;
 const visa = (b) => `<span class="cardmark ${b.toLowerCase()}">${b === 'Mastercard' ? 'MC' : b === 'Amex' ? 'AMEX' : 'VISA'}</span>`;
 const txStatus = (x) => (x.refunds.length ? (x.refunds.reduce((a, r) => a + r.amount, 0) >= x.amount ? 'Refunded' : 'Partially refunded') : x.status);
 const FILTERS = {
   all: [['Amount', null], ['Date', null], ['Status', ['Paid', 'Disputed', 'Refunded', 'Partially refunded']], ['Payment method', ['Card', 'Tap to pay']]],
+  payouts: [['Status', ['Paid', 'In transit', 'Failed', 'Canceled']], ['Amount', null], ['Method', ['Standard', 'Instant']], ['Date', null]],
   disputes: [['Reason', Object.keys(REASONS)], ['Status', ['Action required', 'In review', 'Dispute won', 'Dispute lost', 'Deadline missed']], ['Amount', null], ['Disputed date', null], ['Respond by', null]],
 };
+const fkey = () => (route() === 'payouts' ? 'payouts' : S.mg.tab);
+function mkPayouts() {
+  const amts = [2140.55, 1876.2, 3204.9, 2950.15, 1422.6, 2688.4, 3511.75, 1990.3, 2305.85, 1754.1, 2876.45, 3120.6, 1688.95, 2420.3, 2999.8, 1534.25, 2210.7, 3305.15, 1902.4, 2611.9, 2045.35, 2733.6];
+  return amts.map((a, i) => {
+    const d = new Date(2026, 10, 2 - i, 6, 10 + i), count = 18 + (i * 7) % 23;
+    return { id: 'po_' + (8800 + i), when: d, arrive: new Date(2026, 10, 4 - i, 9, 0), amount: a, status: i < 2 ? 'In transit' : i === 6 ? 'Failed' : i === 13 ? 'Canceled' : 'Paid',
+      method: i % 4 === 1 ? 'Instant' : 'Standard', count, fees: Math.round((a * 0.029 + count * 0.3) * 100) / 100, refunds: i % 5 === 2 ? 21.5 : 0,
+      trace: `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-LNG${(482913 + i * 7919).toString(36).toUpperCase()}` };
+  });
+}
 function mgRows() {
-  const g = S.mg, f = g.filters[g.tab];
-  if (g.tab === 'all') return g.tx.filter((x) => (!f.Status?.length || f.Status.includes(txStatus(x))) && (!f['Payment method']?.length || f['Payment method'].includes(x.method)));
+  const g = S.mg, k = fkey(), f = g.filters[k];
+  if (k === 'payouts') return g.payouts.filter((x) => (!f.Status?.length || f.Status.includes(x.status)) && (!f.Method?.length || f.Method.includes(x.method)));
+  if (k === 'all') return g.tx.filter((x) => (!f.Status?.length || f.Status.includes(txStatus(x))) && (!f['Payment method']?.length || f['Payment method'].includes(x.method)));
   return g.disputes.filter((d) => (!f.Status?.length || f.Status.includes(d.status)) && (!f.Reason?.length || f.Reason.includes(d.reason)));
 }
 const bankLabel = () => {
   const b = BANKS.find((x) => x.id === S.d.bank), a = S.d.linked[S.d.payoutAcct];
   return b && a ? `${b.name} ••••${a.last4}` : 'Wells Fargo ••••1234';
 };
-
-function manageView() {
-  if (!S.mg) S.mg = mgDefaults();
-  const g = S.mg, b = g.bal, total = b.onWay + b.upcoming + b.available;
-  const rows = mgRows(), pages = Math.max(1, Math.ceil(rows.length / 10));
-  if (g.page >= pages) g.page = pages - 1;
-  const slice = rows.slice(g.page * 10, g.page * 10 + 10);
-  const chips = FILTERS[g.tab].map(([name, opts]) => {
-    const sel = g.filters[g.tab][name] || [];
-    const pop = g.pop === name && opts ? `<div class="fpop" role="dialog" aria-label="Filter by ${esc(name)}">${opts.map((o) => `<label class="fopt"><input type="checkbox" data-fopt="${esc(name)}" value="${esc(o)}"${sel.includes(o) ? ' checked' : ''}> ${esc(o)}</label>`).join('')}${sel.length ? `<button class="linkbtn" data-act="filter-clear" data-f="${esc(name)}">Clear</button>` : ''}</div>` : '';
-    return `<span class="chipwrap"><button class="chip${sel.length ? ' on' : ''}" data-act="filter" data-f="${esc(name)}" aria-expanded="${g.pop === name}">${esc(name)}${sel.length ? ` · ${sel.length}` : ''}</button>${pop}</span>`;
-  }).join('');
-  const head = g.tab === 'all'
-    ? '<tr><th>Date</th><th>Status</th><th class="grow">From</th><th class="r">Amount</th></tr>'
-    : '<tr><th>Respond by</th><th>Status</th><th class="grow">From</th><th class="r">Disputed amount</th></tr>';
-  const body = slice.length ? slice.map((r) => g.tab === 'all'
-    ? `<tr data-act="open-tx" data-id="${r.id}" tabindex="0"><td>${fDate(r.when)}</td><td>${badge(txStatus(r))}</td><td class="grow">${esc(r.email)}</td><td class="r"><b>${money(r.amount)}</b><span class="cur">USD</span></td></tr>`
-    : `<tr data-act="open-dp" data-id="${r.id}" tabindex="0"><td>${fDate(r.due)}</td><td>${badge(r.status)}</td><td class="grow">${esc(r.tx.email)}</td><td class="r"><b>${money(r.amount)}</b><span class="cur">USD</span></td></tr>`).join('')
-    : `<tr class="empty"><td colspan="4">No ${g.tab === 'all' ? 'payments' : 'disputes'} match these filters. <button class="linkbtn" data-act="filter-reset">Clear filters</button></td></tr>`;
-  const from = rows.length ? g.page * 10 + 1 : 0, to = Math.min(rows.length, g.page * 10 + 10);
-  return `
-  <nav class="crumbs" aria-label="Breadcrumb"><button data-toast="Home isn’t part of this prototype.">Home</button><span>/</span><button data-act="nav-payments">Payments</button><span>/</span><span aria-current="page" class="cur-crumb">Transactions</span></nav>
-  <h1 class="pg-title">Transactions</h1>
-  <section class="pbox">
-    <div class="bal-row">
+const crumbs = (name) => `<nav class="crumbs" aria-label="Breadcrumb"><button data-toast="Home isn’t part of this prototype.">Home</button><span>/</span><button data-act="nav-payments">Payments</button><span>/</span><span aria-current="page" class="cur-crumb">${name}</span></nav><h1 class="pg-title">${name}</h1>`;
+function balanceBlock() {
+  const b = S.mg.bal, total = b.onWay + b.upcoming + b.available;
+  return `<div class="bal-row">
       <div><div class="bal-lbl">Total balance</div><div class="bal-big">${money(total)}</div></div>
       <div class="bal-btns"><button class="btn primary auto" data-act="m-payout">Pay out</button><button class="btn secondary auto" data-act="m-balance">See details</button></div>
     </div>
     <div class="bal-meta">
       <div><div class="bal-sm">On the way to your bank</div><div class="bal-md">${money(b.onWay)}</div></div>
       <div><div class="bal-sm">Expected to arrive</div><div class="bal-md">November 5 <button class="lnk-md" data-act="m-balance">Update</button></div></div>
-    </div>
-  </section>
+    </div>`;
+}
+function tableBlock(head, rowFn, noun) {
+  const g = S.mg, k = fkey(), rows = mgRows(), pages = Math.max(1, Math.ceil(rows.length / 10));
+  if (g.pg[k] >= pages) g.pg[k] = pages - 1;
+  const pg = g.pg[k], slice = rows.slice(pg * 10, pg * 10 + 10);
+  const chips = FILTERS[k].map(([name, opts]) => {
+    const sel = g.filters[k][name] || [];
+    const pop = g.pop === name && opts ? `<div class="fpop" role="dialog" aria-label="Filter by ${esc(name)}">${opts.map((o) => `<label class="fopt"><input type="checkbox" data-fopt="${esc(name)}" value="${esc(o)}"${sel.includes(o) ? ' checked' : ''}> ${esc(o)}</label>`).join('')}${sel.length ? `<button class="linkbtn" data-act="filter-clear" data-f="${esc(name)}">Clear</button>` : ''}</div>` : '';
+    return sel.length
+      ? `<span class="chipwrap"><span class="chip on"><button class="chip-x" data-act="filter-clear" data-f="${esc(name)}" aria-label="Remove ${esc(name)} filter">${ic('close', 14)}</button><button class="chip-l" data-act="filter" data-f="${esc(name)}" aria-expanded="${g.pop === name}">${esc(name)}<span class="chip-v">${esc(sel.length > 2 ? `${sel.length} selected` : sel.join(', '))}</span></button></span>${pop}</span>`
+      : `<span class="chipwrap"><button class="chip" data-act="filter" data-f="${esc(name)}" aria-expanded="${g.pop === name}">${esc(name)}</button>${pop}</span>`;
+  }).join('');
+  const body = slice.length ? slice.map(rowFn).join('') : `<tr class="empty"><td colspan="4">No ${noun} match these filters. <button class="linkbtn" data-act="filter-reset">Clear filters</button></td></tr>`;
+  const from = rows.length ? pg * 10 + 1 : 0, to = Math.min(rows.length, pg * 10 + 10);
+  return `<div class="tx-actions"><div class="chips">${chips}</div><button class="btn secondary auto" data-act="m-export">Export</button></div>
+      <div class="tbl-scroll"><table class="tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+      <div class="tx-foot"><span><b>${from}–${to}</b> of <b>${rows.length}</b> results</span>
+        <div class="pager"><button class="btn secondary auto" data-act="mg-prev"${pg === 0 ? ' disabled' : ''}>Previous</button><button class="btn secondary auto" data-act="mg-next"${pg >= pages - 1 ? ' disabled' : ''}>Next</button></div></div>`;
+}
+const amtCell = (a) => `<td class="r"><b>${money(a)}</b><span class="cur">USD</span></td>`;
+
+function manageView() {
+  if (!S.mg) S.mg = mgDefaults();
+  const g = S.mg;
+  const table = g.tab === 'all'
+    ? tableBlock('<tr><th>Date</th><th>Status</th><th class="grow">From</th><th class="r">Amount</th></tr>', (r) => `<tr data-act="open-tx" data-id="${r.id}" tabindex="0"><td>${fDate(r.when)}</td><td>${badge(txStatus(r))}</td><td class="grow">${esc(r.email)}</td>${amtCell(r.amount)}</tr>`, 'payments')
+    : tableBlock('<tr><th>Respond by</th><th>Status</th><th class="grow">From</th><th class="r">Disputed amount</th></tr>', (r) => `<tr data-act="open-dp" data-id="${r.id}" tabindex="0"><td>${fDate(r.due)}</td><td>${badge(r.status)}</td><td class="grow">${esc(r.tx.email)}</td>${amtCell(r.amount)}</tr>`, 'disputes');
+  return `${crumbs('Transactions')}
+  <section class="pbox">${balanceBlock()}</section>
   <section class="pbox">
     <h2 class="pbox-t">Recent transactions</h2>
     <div class="tx-wrap">
@@ -1024,10 +1066,23 @@ function manageView() {
         <button role="tab" class="tab${g.tab === 'all' ? ' on' : ''}" aria-selected="${g.tab === 'all'}" data-act="mg-tab" data-tab="all">All</button>
         <button role="tab" class="tab${g.tab === 'disputes' ? ' on' : ''}" aria-selected="${g.tab === 'disputes'}" data-act="mg-tab" data-tab="disputes">Disputes</button>
       </div>
-      <div class="tx-actions"><div class="chips">${chips}</div><button class="btn secondary auto" data-act="m-export">Export</button></div>
-      <div class="tbl-scroll"><table class="tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>
-      <div class="tx-foot"><span><b>${from}–${to}</b> of <b>${rows.length}</b> results</span>
-        <div class="pager"><button class="btn secondary auto" data-act="mg-prev"${g.page === 0 ? ' disabled' : ''}>Previous</button><button class="btn secondary auto" data-act="mg-next"${g.page >= pages - 1 ? ' disabled' : ''}>Next</button></div></div>
+      ${table}
+    </div>
+  </section>`;
+}
+
+function payoutsView() {
+  if (!S.mg) S.mg = mgDefaults();
+  const b = S.mg.bal, dest = bankLabel().replace(/^.*(••••\d+)$/, 'Bank $1');
+  return `${crumbs('Payouts')}
+  <section class="pbox banner-box">
+    <div class="bb-t"><b>Improve your cash flow</b><span>With Instant Payouts, get access to your balance within minutes – even weekends and holidays. You currently have ${money(Math.min(514.89, b.available))} available.</span></div>
+    <button class="btn primary auto" data-act="m-payout-instant">Pay out instantly</button>
+  </section>
+  <section class="pbox">
+    ${balanceBlock()}
+    <div class="tx-wrap" style="padding:8px 0 0">
+      ${tableBlock('<tr><th>Date</th><th>Status</th><th class="grow">Destination</th><th class="r">Amount</th></tr>', (r) => `<tr data-act="open-po" data-id="${r.id}" tabindex="0"><td>${fDate(r.arrive)}</td><td>${badge(r.status)}</td><td class="grow">${esc(dest)}</td>${amtCell(r.amount)}</tr>`, 'payouts')}
     </div>
   </section>`;
 }
@@ -1061,10 +1116,34 @@ function timeline(items) {
 }
 
 const mgModals = {
+  po(m) {
+    const p = m.p, g = S.mg, wd = (d) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const sub = p.status === 'Paid' ? `Completed ${wd(p.arrive)}` : p.status === 'In transit' ? `Expected to arrive ${wd(p.arrive)}` : p.status === 'Failed' ? `Failed ${wd(p.when)}` : `Canceled ${wd(p.when)}`;
+    const gross = p.amount + p.fees + p.refunds;
+    const items = [0, 1, 2, 3].map((j) => g.tx[(p.count + j * 5) % g.tx.length]).filter((x) => !x.refunds.length);
+    const refundTx = g.tx.find((x) => x.refunds.length);
+    const srow = (k, c, gr, fe, to, strong) => `<tr${strong ? ' class="tot"' : ''}><td>${k}</td><td class="r">${c}</td><td class="r">${gr}</td><td class="r">${fe}</td><td class="r">${strong ? `<b>${to}</b>` : to}</td></tr>`;
+    return mdl(`<div class="amt-h"><span class="amt-big" id="mdl-t">${money(p.amount)}</span><span class="amt-cur">USD</span>${badge(p.status)}</div><p class="mdl-sub">${sub}</p>`,
+    `${p.status === 'Failed' ? '<div class="banner" role="alert"><div>Your bank declined this payout, so the funds went back to your balance. Check your bank details in Payments › Account.</div></div>' : ''}
+    <section class="msec"><h3>Overview</h3>
+      ${kv('To', `${ic('stmt-bank', 14)} ${esc(bankLabel())}`)}${kv('Amount', money(p.amount))}${kv('Type', 'Bank account')}${kv('Method', p.method)}${kv('Description', 'LINGA PAYOUT')}
+      ${kv(p.status === 'Paid' ? 'Date paid' : 'Date created', fTime(p.status === 'Paid' ? p.arrive : p.when))}${kv('Payout trace ID', `<span class="mono" style="font-size:13px">${p.trace}</span>`)}</section>
+    <section class="msec"><h3>Summary</h3>
+      <div class="tbl-scroll"><table class="tbl sum"><thead><tr><th>Count</th><th></th><th class="r">Gross</th><th class="r">Fees</th><th class="r">Total</th></tr></thead><tbody>
+        ${srow('Charges', p.count, money(gross), money(-p.fees), money(gross - p.fees))}
+        ${srow('Refunds', p.refunds ? 1 : 0, money(-p.refunds), money(0), money(-p.refunds))}
+        ${srow('Adjustments', 0, money(0), money(0), money(0))}
+        ${srow('Payouts', '', '', '', money(p.amount), true)}
+      </tbody></table></div></section>
+    <section class="msec"><h3>Transactions</h3><ul class="ptx">
+      ${items.map((x) => `<li><button data-act="po-tx" data-id="${x.id}"><span><b>Payment</b><small>${esc(x.desc)} · ${esc(x.name)}</small></span><b>${money(x.amount)}</b>${ic('chevron-forward', 20)}</button></li>`).join('')}
+      ${p.refunds && refundTx ? `<li><button data-act="po-tx" data-id="${refundTx.id}"><span><b>Refund</b><small>${esc(refundTx.desc)} · ${esc(refundTx.name)}</small></span><b>${money(-p.refunds)}</b>${ic('chevron-forward', 20)}</button></li>` : ''}
+    </ul><p class="help" style="padding:0">Showing ${items.length + (p.refunds ? 1 : 0)} of ${p.count + (p.refunds ? 1 : 0)} transactions in this payout. <button class="u" data-toast="The full list downloads with Export on the Payouts page.">View all</button></p></section>`);
+  },
   payment(m) {
     const x = m.tx, st = txStatus(x), refunded = x.refunds.reduce((a, r) => a + r.amount, 0), net = x.amount - fee(x.amount) - refunded;
     const tl = [...x.refunds.map((r) => ['Refund sent', fTime(r.when), `${money(r.amount)} · ${esc(r.reason)}`]).reverse(), ['Payment succeeded', fTime(x.when)], ['Payment started', fTime(new Date(x.when.getTime() - 4000))]];
-    return mdl(`<div class="amt-h"><span class="amt-big" id="mdl-t">${money(x.amount)}</span><span class="amt-cur">USD</span>${badge(st === 'Paid' ? 'Succeeded' : st)}</div><p class="mdl-sub">From ${esc(x.email)}</p>
+    return mdl(`${m.back ? '<button class="lnkc back" data-act="m-back">‹ Back to payout</button>' : ''}<div class="amt-h"><span class="amt-big" id="mdl-t">${money(x.amount)}</span><span class="amt-cur">USD</span>${badge(st === 'Paid' ? 'Succeeded' : st)}</div><p class="mdl-sub">From ${esc(x.email)}</p>
       ${refunded < x.amount ? '<button class="btn primary" data-act="m-refund">Begin refund</button>' : `<p class="note">This payment was fully refunded on ${fDate(x.refunds[x.refunds.length - 1].when)}.</p>`}`,
     `<section class="msec"><h3>Payment details</h3>${kv('Date received', fTime(x.when))}${kv('Amount', money(x.amount))}${refunded ? kv('Refunded', '−' + money(refunded)) : ''}${feeRows(x, m.feeOpen)}${kv('Net', money(net))}${kv('Description', esc(x.desc))}</section>
       ${methodSection(x)}${timeline(tl)}`);
@@ -1079,7 +1158,7 @@ const mgModals = {
   export(m) {
     const ranges = [['today', 'Today', 'Nov 2'], ['7d', 'Last 7 days', 'Oct 27–Nov 2'], ['month', 'Current month', 'Nov 1–Nov 2'], ['lastmonth', 'Last month', 'Oct 1–Oct 31'], ['all', 'All'], ['custom', 'Custom']];
     const cols = { default: ['Default (23)', 'ID, Created date (UTC), Amount, Amount Refunded, Currency, Captured, Converted Amount, Converted Amount Refunded, Converted Currency, Decline Reason, Description, Fee, Refunded date (UTC), Statement Descriptor, Status, Seller Message, Taxes On Fee, Card ID, Customer ID, Customer Description, Customer Email, Invoice ID, Transfer'], all: ['All (31)', 'Everything in Default, plus Card Brand, Card Last4, Card Funding, Card Country, Payment Method Type, Dispute Status, Dispute Reason, Payout ID'], minimal: ['Minimal (6)', 'ID, Created date (UTC), Amount, Currency, Status, Customer Email'] };
-    return mdl(`<h2 class="mdl-t" id="mdl-t">Export ${S.mg.tab === 'disputes' ? 'disputes' : 'payments'}</h2>`,
+    return mdl(`<h2 class="mdl-t" id="mdl-t">Export ${{ disputes: 'disputes', payouts: 'payouts' }[fkey()] || 'payments'}</h2>`,
     `<div class="field"><span class="lbl-t">Date range</span>${mRadios('range', ranges)}
       ${m.range === 'custom' ? `<div class="daterow"><div class="field"><label class="lbl-t" for="m-start">From</label>${mIn('start', { type: 'date' })}</div><div class="field"><label class="lbl-t" for="m-end">To</label>${mIn('end', { type: 'date' })}</div></div>${mErr('end')}` : ''}</div>
       <hr class="mdl-hr">
@@ -1182,16 +1261,20 @@ function mgAction(act, t) {
   if (!S.mg) S.mg = mgDefaults();
   const m = S.modal, g = S.mg;
   switch (act) {
-    case 'mg-tab': g.tab = t.dataset.tab; g.page = 0; g.pop = null; render(); document.querySelector('.tab.on')?.focus(); return true;
-    case 'mg-prev': g.page = Math.max(0, g.page - 1); render(); return true;
-    case 'mg-next': g.page += 1; render(); return true;
+    case 'mg-tab': g.tab = t.dataset.tab; g.pg[g.tab] = 0; g.pop = null; render(); document.querySelector('.tab.on')?.focus(); return true;
+    case 'mg-prev': g.pg[fkey()] = Math.max(0, g.pg[fkey()] - 1); render(); return true;
+    case 'mg-next': g.pg[fkey()] += 1; render(); return true;
     case 'filter': {
-      const f = t.dataset.f, opts = FILTERS[g.tab].find(([n]) => n === f)[1];
+      const f = t.dataset.f, opts = FILTERS[fkey()].find(([n]) => n === f)[1];
       if (!opts) { toast(`Filtering by ${f.toLowerCase()} isn’t part of this prototype yet. Try Status.`); return true; }
       g.pop = g.pop === f ? null : f; render(); return true;
     }
-    case 'filter-clear': delete g.filters[g.tab][t.dataset.f]; g.page = 0; render(); return true;
-    case 'filter-reset': g.filters[g.tab] = {}; g.pop = null; g.page = 0; render(); return true;
+    case 'filter-clear': delete g.filters[fkey()][t.dataset.f]; g.pg[fkey()] = 0; g.pop = null; render(); return true;
+    case 'filter-reset': g.filters[fkey()] = {}; g.pop = null; g.pg[fkey()] = 0; render(); return true;
+    case 'open-po': openModal('po', { p: g.payouts.find((y) => y.id === t.dataset.id) }); return true;
+    case 'po-tx': { const x = g.tx.find((y) => y.id === t.dataset.id); openModal('payment', { tx: x, back: m }); return true; }
+    case 'm-payout-instant': payoutModal(); return true;
+    case 'sub-nav': go(t.dataset.to); return true;
     case 'open-tx': { const x = g.tx.find((y) => y.id === t.dataset.id); if (x.dispute) openModal('dispute', { d: x.dispute }); else openModal('payment', { tx: x }); return true; }
     case 'open-dp': openModal('dispute', { d: g.disputes.find((y) => y.id === t.dataset.id) }); return true;
     case 'm-payout': payoutModal(); return true;
@@ -1235,7 +1318,9 @@ function mgAction(act, t) {
         m.busy = false;
         if (S.failNext) { S.failNext = false; m.fail = `${m.to.split(' ••')[0]} declined this payout. Check your bank details in Payments › Account, or try a different account.`; renderLayer(); return; }
         const f = m.speed === 'instant' ? Math.round(a * 2) / 100 : 0;
-        b.available -= a + f; b.onWay += a; m.sent = a; m.phase = 'done'; render();
+        b.available -= a + f; b.onWay += a; m.sent = a; m.phase = 'done';
+        g.payouts.unshift({ id: 'po_' + (9000 + g.payouts.length), when: new Date(2026, 10, 2, 15, 5), arrive: m.speed === 'instant' ? new Date(2026, 10, 2, 15, 35) : new Date(2026, 10, 4, 9, 0), amount: a, status: 'In transit', method: m.speed === 'instant' ? 'Instant' : 'Standard', count: 0, fees: 0, refunds: 0, trace: '20261102-LNG' + Math.floor(a * 1000).toString(36).toUpperCase() });
+        render();
       }, 1100);
       return true;
     }
@@ -1294,11 +1379,11 @@ function shell(content) {
       <nav class="menu" aria-label="Back office">
         <div class="menu-group">${NAV_TOP.map((n) => mi(n)).join('')}</div>
         <div class="menu-store">Naples store</div>
-        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && route() !== 'manage')).join('')}${route() === 'manage' ? `<div class="subs">${['Transactions', 'Payouts', 'Statements', 'Account'].map((x) => `<button class="smi${x === 'Transactions' ? ' active' : ''}"${x === 'Transactions' ? ' aria-current="page"' : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`).join('')}</div>` : ''}</div>
+        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && !['manage', 'payouts'].includes(route()))).join('')}${['manage', 'payouts'].includes(route()) ? `<div class="subs">${[['Transactions', 'manage'], ['Payouts', 'payouts'], ['Statements'], ['Account']].map(([x, to]) => { const on = to === route(); return `<button class="smi${on ? ' active' : ''}"${on ? ' aria-current="page"' : to ? ` data-act="sub-nav" data-to="${to}"` : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`; }).join('')}</div>` : ''}</div>
         <div class="menu-sep"><div class="menu-group">${mi(['nav-settings', 'Settings'])}</div></div>
         <div class="menu-group">${mi(['nav-shop', 'Shop'])}</div>
       </nav>
-      <main class="main${route() === 'manage' ? ' page' : ''}" id="main">${content}</main>
+      <main class="main${['manage', 'payouts'].includes(route()) ? ' page' : ''}" id="main">${content}</main>
     </div>
   </div>`;
 }
@@ -1606,9 +1691,9 @@ document.addEventListener('click', (ev) => {
 document.addEventListener('change', (ev) => {
   if (ev.target.id === 'fail-next') { S.failNext = ev.target.checked; return; }
   if (ev.target.dataset.fopt) {
-    const g = S.mg, f = ev.target.dataset.fopt, cur = new Set(g.filters[g.tab][f] || []);
+    const g = S.mg, f = ev.target.dataset.fopt, cur = new Set(g.filters[fkey()][f] || []);
     ev.target.checked ? cur.add(ev.target.value) : cur.delete(ev.target.value);
-    g.filters[g.tab][f] = [...cur]; g.page = 0; render(); document.querySelector(`[data-fopt="${f}"][value="${ev.target.value}"]`)?.focus(); return;
+    g.filters[fkey()][f] = [...cur]; g.pg[fkey()] = 0; render(); document.querySelector(`[data-fopt="${f}"][value="${ev.target.value}"]`)?.focus(); return;
   }
   if (ev.target.id === 'm-files') {
     const m = S.modal; [...ev.target.files].forEach((f) => m.files.push({ name: f.name, size: f.size })); delete m.err.files; renderLayer(); return;
