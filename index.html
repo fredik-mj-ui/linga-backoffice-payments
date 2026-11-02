@@ -274,6 +274,30 @@ img { display: block; max-width: none; }
 .ptx small { font-size: 14px; color: var(--body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lnkc.back { align-self: flex-start; font-size: 14px; }
 .kv img { display: inline-block; vertical-align: -2px; margin-right: 6px; }
+.rtabs { display: flex; border-bottom: 1px solid var(--border); margin-top: -2px; flex-wrap: wrap; }
+.rtab { padding: 12px 16px; font-size: 18px; line-height: 24px; color: var(--body); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.rtab:hover { color: var(--heading); }
+.rtab.on { color: var(--heading); border-bottom-color: var(--action); }
+.pbox.rep { padding: 20px; gap: 24px; }
+.rchip { display: inline-flex; align-items: center; gap: 0; padding: 4px 8px; border: 1px solid var(--action); border-radius: 4px; font-size: 14px; line-height: 20px; color: var(--heading); background: #fff; }
+.rchip span { margin-left: 6px; padding-left: 6px; border-left: 1px solid #c9ced4; color: var(--action-text); }
+.rchip:hover { background: #f1f7fa; }
+.fpop .fopt { width: 100%; text-align: left; font-size: 14px; }
+.fpop .fopt.cur-opt { font-weight: 600; color: var(--action-text); }
+.rsec { display: flex; flex-direction: column; }
+.rsec-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; }
+.rsec-h h2 { margin: 0; font-weight: 600; font-size: 16px; line-height: 20px; color: var(--heading); }
+.btn-dl { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 4px; background: #f2f2f2; font-size: 14px; line-height: 20px; color: var(--heading); }
+.btn-dl:hover { background: #e6e6e6; }
+.rtbl { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
+.rtbl th { text-align: left; font-weight: 400; color: var(--heading); padding: 4px 0 8px; border-bottom: 1px solid var(--border); }
+.rtbl td { padding: 9px 0; color: var(--heading); }
+.rtbl .r { text-align: right; }
+.rtbl tr.b td { font-weight: 400; }
+.rtbl b { font-weight: 600; }
+.rtbl .lt { font-weight: 400; }
+.rtbl tr.tot td { padding-top: 13px; }
+.rtbl tr.tot td.r { background: linear-gradient(var(--heading), var(--heading)) top right / 100px 1px no-repeat; }
 /* Manage modals */
 .scrim.mg { place-items: start center; overflow-y: auto; padding-block: 40px; }
 .mdl { width: 496px; max-width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, .14), 0 2px 6px rgba(0, 0, 0, .08); }
@@ -613,7 +637,7 @@ const S = {
 
 const FLOW = ['business-type', 'personal', 'business', 'payout', 'public', 'review'];
 const LABEL = { 'business-type': 'Business type', personal: 'Personal details', business: 'Business details', payout: 'Payout details', public: 'Public details', review: 'Review and submit' };
-const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'payouts'];
+const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'payouts', 'reports'];
 const FS_ROUTES = ['payments', 'account', 'creating', ...FLOW, 'done'];
 const MODE = () => (location.hash.startsWith('#fs-') ? 'fs' : 'bo');
 const route = () => {
@@ -888,6 +912,7 @@ const screens = {
 
   manage: () => manageView(),
   payouts: () => payoutsView(),
+  reports: () => reportsView(),
 };
 
 function prettyDob(v) {
@@ -1068,6 +1093,45 @@ function manageView() {
       </div>
       ${table}
     </div>
+  </section>`;
+}
+
+/* ----- Reports ----- */
+const REP_MONTHS = {
+  '2026-09': { label: 'Sep 1, 2026 → Sep 30, 2026', from: [8, 1], to: [8, 30], file: '2026-09', start: 2652.70, ch: [612, 47880.40], rf: [9, 412.75], po: [30, 45230.10] },
+  '2026-10': { label: 'Oct 1, 2026 → Oct 31, 2026', from: [9, 1], to: [9, 31], file: '2026-10', start: 4890.25, ch: [668, 52310.85], rf: [12, 640.20], po: [31, 51560.90] },
+  '2026-11': { label: 'Nov 1, 2026 → Nov 2, 2026', from: [10, 1], to: [10, 2], file: '2026-11', start: 5000.00, ch: [41, 3412.60], rf: [0, 0], po: [2, 3412.60] },
+};
+const REP_TZ = { ny: ['America - New York', 'EDT', 'EST'], chi: ['America - Chicago', 'CDT', 'CST'], den: ['America - Denver', 'MDT', 'MST'], la: ['America - Los Angeles', 'PDT', 'PST'] };
+const tzAbbr = (tz, m, d) => (m < 10 || (m === 10 && d < 1) ? REP_TZ[tz][1] : m === 10 && d === 1 ? REP_TZ[tz][1] : REP_TZ[tz][2]);
+function reportsView() {
+  if (!S.mg) S.mg = mgDefaults();
+  const g = S.mg, r = g.rep || (g.rep = { tab: 'balance', month: '2026-10', tz: 'ny' });
+  const M = REP_MONTHS[r.month], net = M.ch[1] - M.rf[1], end = M.start + net - M.po[1];
+  const pRf = Math.round(M.rf[1] * 90) / 100, pCh = M.po[1] + pRf, uRf = M.rf[1] - pRf, uCh = end + uRf;
+  const pRfN = Math.max(0, M.rf[0] - (M.rf[0] ? 1 : 0)), pChN = Math.max(0, M.ch[0] - 23);
+  const mon = (x) => MONTHS[x[0]], day = (x) => `${mon(x)} ${x[1]} ${tzAbbr(r.tz, x[0], x[1])}`;
+  const neg = (v) => (v ? money(-v) : money(0));
+  const sec = (id, title, rows, total) => `<section class="rsec"><div class="rsec-h"><h2>${title}</h2><button class="btn-dl" data-act="rep-dl" data-id="${id}" data-t="${esc(title)}">Download</button></div>
+    <table class="rtbl"><thead><tr><th>Description</th><th class="r">Amount</th></tr></thead><tbody>${rows.map(([k, v, b]) => `<tr${b ? ' class="b"' : ''}><td>${k}</td><td class="r">${v}</td></tr>`).join('')}
+    <tr class="tot"><td>${total[0]}</td><td class="r">${total[1]}</td></tr></tbody></table></section>`;
+  const summary = sec('balance_summary', 'Balance summary', [[`<b>Starting balance</b> ${day(M.from)}`, `<b>${money(M.start)}</b>`, 1], ['<b>Net balance change from activity</b>', `<b>${money(net)}</b>`, 1], ['<b>Total payouts</b>', `<b>${neg(M.po[1])}</b>`, 1]], [`<b>Ending balance</b> <span class="lt">${day(M.to)}</span>`, `<b>${money(end)}</b>`]);
+  const body = r.tab === 'balance'
+    ? summary
+      + sec('balance_change_from_activity', 'Balance change from activity', [[`Charges (${M.ch[0]})`, money(M.ch[1])], [`Refunds (${M.rf[0]})`, neg(M.rf[1])]], ['<b>Net balance change from activity</b>', `<b>${money(net)}</b>`])
+      + sec('payouts', 'Payouts', [[`Payouts (${M.po[0]})`, neg(M.po[1])]], ['<b>Total paid out</b>', `<b>${neg(M.po[1])}</b>`])
+    : summary
+      + sec('payout_reconciliation', 'Payout reconciliation', [[`Charges (${pChN})`, money(pCh)], [`Refunds (${pRfN})`, neg(pRf)]], ['<b>Total paid out</b>', `<b>${money(M.po[1])}</b>`])
+      + sec('ending_balance_reconciliation', 'Ending balance reconciliation', [[`Charges (${M.ch[0] - pChN})`, money(uCh)], [`Refunds (${M.rf[0] - pRfN})`, neg(uRf)]], ['<b>Ending balance</b>', `<b>${money(end)}</b>`]);
+  const pop = (k, opts, cur) => (g.pop === k ? `<div class="fpop" role="listbox">${opts.map(([v, t]) => `<button class="fopt${v === cur ? ' cur-opt' : ''}" role="option" aria-selected="${v === cur}" data-act="rep-set" data-k="${k}" data-v="${v}">${esc(t)}</button>`).join('')}</div>` : '');
+  return `${crumbs('Reports')}
+  <div class="rtabs" role="tablist"><button role="tab" class="rtab${r.tab === 'balance' ? ' on' : ''}" aria-selected="${r.tab === 'balance'}" data-act="rep-tab" data-tab="balance">Balance summary</button><button role="tab" class="rtab${r.tab === 'recon' ? ' on' : ''}" aria-selected="${r.tab === 'recon'}" data-act="rep-tab" data-tab="recon">Payout reconciliation</button></div>
+  <section class="pbox rep">
+    <div class="chips">
+      <span class="chipwrap"><button class="rchip" data-act="rep-pop" data-k="month" aria-expanded="${g.pop === 'month'}">Date range<span>${M.label}</span></button>${pop('month', Object.entries(REP_MONTHS).map(([k, v]) => [k, v.label + (k === '2026-11' ? ' (month to date)' : '')]), r.month)}</span>
+      <span class="chipwrap"><button class="rchip" data-act="rep-pop" data-k="tz" aria-expanded="${g.pop === 'tz'}">Timezone<span>${REP_TZ[r.tz][0]}</span></button>${pop('tz', Object.entries(REP_TZ).map(([k, v]) => [k, v[0]]), r.tz)}</span>
+    </div>
+    ${body}
   </section>`;
 }
 
@@ -1275,6 +1339,16 @@ function mgAction(act, t) {
     case 'po-tx': { const x = g.tx.find((y) => y.id === t.dataset.id); openModal('payment', { tx: x, back: m }); return true; }
     case 'm-payout-instant': payoutModal(); return true;
     case 'sub-nav': go(t.dataset.to); return true;
+    case 'rep-tab': g.rep.tab = t.dataset.tab; g.pop = null; render(); document.querySelector('.rtab.on')?.focus(); return true;
+    case 'rep-pop': g.pop = g.pop === t.dataset.k ? null : t.dataset.k; render(); document.querySelector('.fpop .fopt.cur-opt')?.focus(); return true;
+    case 'rep-set': g.rep[t.dataset.k] = t.dataset.v; g.pop = null; render(); return true;
+    case 'rep-dl': {
+      if (t.getAttribute('aria-busy')) return true;
+      const M = REP_MONTHS[g.rep.month], name = `${t.dataset.id}_${M.file}.csv`;
+      t.setAttribute('aria-busy', 'true'); t.innerHTML = '<span class="spinner dark" style="width:12px;height:12px;margin:0 6px 0 0"></span>Preparing';
+      setTimeout(() => { render(); toast(`${t.dataset.t} for ${M.label.replace(' → ', '–')} is ready. We’ll email ${name} to ${S.fs.email || S.d.email}.`); }, 900);
+      return true;
+    }
     case 'open-tx': { const x = g.tx.find((y) => y.id === t.dataset.id); if (x.dispute) openModal('dispute', { d: x.dispute }); else openModal('payment', { tx: x }); return true; }
     case 'open-dp': openModal('dispute', { d: g.disputes.find((y) => y.id === t.dataset.id) }); return true;
     case 'm-payout': payoutModal(); return true;
@@ -1379,11 +1453,11 @@ function shell(content) {
       <nav class="menu" aria-label="Back office">
         <div class="menu-group">${NAV_TOP.map((n) => mi(n)).join('')}</div>
         <div class="menu-store">Naples store</div>
-        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && !['manage', 'payouts'].includes(route()))).join('')}${['manage', 'payouts'].includes(route()) ? `<div class="subs">${[['Transactions', 'manage'], ['Payouts', 'payouts'], ['Statements'], ['Account']].map(([x, to]) => { const on = to === route(); return `<button class="smi${on ? ' active' : ''}"${on ? ' aria-current="page"' : to ? ` data-act="sub-nav" data-to="${to}"` : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`; }).join('')}</div>` : ''}</div>
+        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && !['manage', 'payouts', 'reports'].includes(route()))).join('')}${['manage', 'payouts', 'reports'].includes(route()) ? `<div class="subs">${[['Transactions', 'manage'], ['Payouts', 'payouts'], ['Reports', 'reports'], ['Account']].map(([x, to]) => { const on = to === route(); return `<button class="smi${on ? ' active' : ''}"${on ? ' aria-current="page"' : to ? ` data-act="sub-nav" data-to="${to}"` : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`; }).join('')}</div>` : ''}</div>
         <div class="menu-sep"><div class="menu-group">${mi(['nav-settings', 'Settings'])}</div></div>
         <div class="menu-group">${mi(['nav-shop', 'Shop'])}</div>
       </nav>
-      <main class="main${['manage', 'payouts'].includes(route()) ? ' page' : ''}" id="main">${content}</main>
+      <main class="main${['manage', 'payouts', 'reports'].includes(route()) ? ' page' : ''}" id="main">${content}</main>
     </div>
   </div>`;
 }

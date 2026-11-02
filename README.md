@@ -41,11 +41,15 @@ Payments › Transactions in the back office (opens after onboarding, or from th
 - **Payment details:** fee breakdown, payment method, timeline, and Begin refund → Send refund (amount checks). Refunds update the status and timeline.
 - **Disputed payment:** dispute card with step-by-step guide, Accept dispute (confirm), and Counter dispute: 3 prefilled steps (reason, customer details, evidence upload) plus a review step.
 - **Fail the next submission** (Prototype menu) makes the next payout, refund or evidence submission fail.
-- Statements and Account in the menu are placeholders for the next designs.
+- Account in the menu is a placeholder for the next design.
 
 ### Manage · Payouts
 
 Payments › Payouts: the Instant Payouts banner (Pay out instantly), the balance with Pay out / See details, and a payouts table filtered to Paid by default (remove the chip or pick In transit, Failed, Canceled, or a method). A new payout appears in the table as In transit. Clicking a payout opens Payout details (overview, summary of charges/refunds/fees, and its transactions; each one opens the payment with a link back to the payout).
+
+### Manage · Reports
+
+Payments › Reports with Balance summary and Payout reconciliation tabs. Date range (Sep, Oct, or Nov month to date) and Timezone change every table; the sample numbers add up (starting balance + activity − payouts = ending balance). Download prepares the CSV and says it will be emailed, since the prototype can't save files.
 
 ## Run locally
 
