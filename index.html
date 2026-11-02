@@ -174,7 +174,10 @@ img { display: block; max-width: none; }
 
 /* Payout */
 .bank-search { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
-.bank-search input { flex: 1; border: 0; outline: 0; font: 14px/20px var(--font); color: var(--heading); min-width: 0; }
+.bank-search { background: var(--page); cursor: text; }
+.bank-search img { flex: none; }
+.bank-search input { flex: 1; min-width: 0; height: 20px; margin: 0; padding: 0; border: 0; outline: 0; border-radius: 0; background: transparent; box-shadow: none; -webkit-appearance: none; appearance: none; color-scheme: light; font: 14px/20px var(--font); letter-spacing: -0.15px; color: var(--heading); }
+.bank-search input::-webkit-search-decoration, .bank-search input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
 .bank-search input::placeholder { color: var(--placeholder); }
 .bank-search:focus-within { border-color: #0196ed; box-shadow: 0 0 0 3px rgba(1, 150, 237, .25); }
 .banks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
@@ -544,7 +547,7 @@ const screens = {
     } else {
       const tiles = BANKS.map((b) => `<button class="bank" data-bank="${b.id}" data-name="${esc(b.name.toLowerCase())}" aria-label="${esc(b.name)}"><img src="${BANKS_DIR}bank-${b.id}.svg" width="88" height="40" alt=""></button>`).join('');
       body = `
-      <label class="bank-search">${ic('search', 12)}<input id="f-banksearch" type="search" placeholder="Search for your bank" aria-label="Search for your bank"></label>
+      <label class="bank-search">${ic('search', 12)}<input id="f-banksearch" type="text" autocomplete="off" spellcheck="false" placeholder="Search for your bank" aria-label="Search for your bank"></label>
       <div class="banks" id="bank-grid">${tiles}<p class="bank-empty" id="bank-empty" hidden>No banks match your search. Enter your bank details manually.</p></div>
       <button class="linkbtn" data-act="manual-on">Enter bank details manually</button>`;
     }
