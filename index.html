@@ -640,7 +640,17 @@ img.rot { transform: rotate(-90deg); }
 .proto-panel button, .proto-panel label { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; text-align: left; font-size: 13px; color: var(--heading); cursor: pointer; }
 .proto-panel button:hover, .proto-panel label:hover { background: var(--depression); }
 .proto-panel .cap { padding: 6px 8px 2px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.proto-panel input { accent-color: var(--action); margin: 0; }
+.proto-panel input[type=checkbox] { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; margin: 0; flex: none; border: 1px solid #c4c4c4; border-radius: 4px; background: #fff; display: grid; place-items: center; cursor: pointer; }
+.proto-panel input[type=checkbox]:checked { border-color: var(--action); background: var(--action); }
+.proto-panel input[type=checkbox]:checked::after { content: ""; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+.proto-panel { width: 280px; max-height: calc(100vh - 90px); overflow-y: auto; }
+.pg-h { width: 100%; }
+.pg-h span { flex: 1; font-weight: 600; }
+.pg-h small { font-size: 11px; color: var(--action-text); background: #eaf3f7; padding: 1px 6px; border-radius: 4px; }
+.pg-h img.down { transform: rotate(90deg); }
+.pg-b { display: flex; flex-direction: column; padding: 2px 0 6px 22px; border-left: 1px solid var(--border); margin-left: 15px; }
+.proto-panel .pj { padding: 6px 8px; }
+.proto-panel .pj.here { background: var(--selected); font-weight: 600; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1180px) { .search, .upgrade { display: none; } }
@@ -1907,14 +1917,22 @@ function renderLayer() {
   }
   const r = route();
   const inForm = Object.keys(STEP_FIELDS).includes(r);
+  const curGrp = isManage() ? 'mg' : MODE() === 'fs' ? 'fs' : 'bo', grp = S.protoGrp || curGrp, here = (h) => location.hash === '#' + h;
+  const LBL = (x) => (x === 'payments' ? 'Accept payments' : x === 'done' ? 'Confirmation' : x === 'account' ? 'Create account / Login' : x === 'creating' ? 'Creating account' : LABEL[x]);
+  const jump = (h, t) => `<button data-jump="${h}" class="pj${here(h.replace('bo:', '')) ? ' here' : ''}"${here(h.replace('bo:', '')) ? ' aria-current="page"' : ''}>${t}</button>`;
+  const groups = [
+    ['bo', 'Back-office onboarding', ['payments', ...FLOW, 'done'].map((x) => jump('bo:' + x, LBL(x)))],
+    ['fs', 'Freestanding onboarding', ['payments', 'account', ...FLOW, 'done'].map((x) => jump('fs-' + x, LBL(x)))],
+    ['mg', 'Manage', [['manage', 'Transactions'], ['payouts', 'Payouts'], ['reports', 'Reports'], ['account', 'Account']].map(([h, t]) => jump('bo:' + h, t)).concat(`<button data-act="proto-notif" class="pj">Announcement Center</button>`)],
+  ];
   const panel = S.protoOpen ? `<div class="proto-panel" role="menu">
       <span class="cap">Prototype</span>
       <button data-goto="start">Go to start page</button>
-      <button data-act="restart">Restart onboarding with sample data</button>
+      <button data-act="restart">Restart with sample data</button>
       ${inForm ? '<button data-act="clear-step">Clear fields on this step</button>' : ''}
       <label><input type="checkbox" id="fail-next" ${S.failNext ? 'checked' : ''}> Fail the next submission</label>
-      <span class="cap">Jump to</span>
-      ${(MODE() === 'fs' ? ['payments', 'account', ...FLOW, 'done'] : ['payments', ...FLOW, 'done']).map((s) => `<button data-jump="${s}">${s === 'payments' ? 'Accept payments' : s === 'done' ? 'Confirmation' : s === 'account' ? 'Create account / Login' : LABEL[s]}</button>`).join('')}
+      <span class="cap">Workflows</span>
+      ${groups.map(([k, t, items]) => `<div class="pg"><button class="pg-h${k === curGrp ? ' cur' : ''}" data-act="proto-grp" data-k="${k}" aria-expanded="${grp === k}">${ic('chevron-forward', 16, 16, grp === k ? 'down' : '')}<span>${t}</span>${k === curGrp ? '<small>You’re here</small>' : ''}</button>${grp === k ? `<div class="pg-b">${items.join('')}</div>` : ''}</div>`).join('')}
     </div>` : '';
   html += `<div class="proto${S.drawer && isManage() ? ' up' : ''}">${panel}<button class="proto-toggle" data-act="proto" aria-expanded="${S.protoOpen}">Prototype</button></div>`;
   if (S.toast) html += `<div class="toast" role="status">${esc(S.toast)}</div>`;
@@ -1970,7 +1988,7 @@ document.addEventListener('click', (ev) => {
   if (S.progressOpen && act !== 'progress' && !t.closest('.progress-menu')) { S.progressOpen = false; render(); }
   if (t.dataset.toast) { toast(t.dataset.toast); return; }
   if (t.dataset.goto) { go(t.dataset.goto); return; }
-  if (t.dataset.jump) { S.protoOpen = false; go(t.dataset.jump); return; }
+  if (t.dataset.jump) { S.protoOpen = false; S.protoGrp = null; go(t.dataset.jump); return; }
   if (act && (mgAction(act, t) || acAction(act, t))) return;
   if (t.dataset.edit) { S.returnToReview = true; go(t.dataset.edit); return; }
   if (t.dataset.bank) { S.modal = { type: 'link', bank: t.dataset.bank, phase: 'consent', sel: LK_ACCTS.map(() => true), email: S.d.email, phone: S.d.phone, err: {}, saved: false, focus: true }; renderLayer(); return; }
@@ -2028,7 +2046,9 @@ document.addEventListener('click', (ev) => {
     }
     case 'bank-reset': S.d.bank = null; S.d.linked = []; S.d.payoutAcct = 0; render(); break;
     case 'submit': if (!S.submitting) submit(); break;
-    case 'proto': S.protoOpen = !S.protoOpen; renderLayer(); break;
+    case 'proto': S.protoOpen = !S.protoOpen; S.protoGrp = null; renderLayer(); break;
+    case 'proto-grp': S.protoGrp = (S.protoGrp || (isManage() ? 'mg' : MODE() === 'fs' ? 'fs' : 'bo')) === t.dataset.k ? 'none' : t.dataset.k; renderLayer(); document.querySelector(`.pg-h[data-k="${t.dataset.k}"]`)?.focus(); break;
+    case 'proto-notif': S.protoOpen = false; if (!isManage()) go('bo:manage'); setTimeout(() => { S.drawer = true; S.notifRead = true; render(); document.getElementById('dr-x')?.focus(); }, 30); break;
     case 'restart': S.protoOpen = false; S.mg = null; S.d = defaults(); S.done = new Set(); S.doneFs = new Set(); S.fs = fsDefaults(); S.completed = false; go('payments'); break;
     case 'clear-step': {
       const r = route();
