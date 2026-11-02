@@ -1,0 +1,929 @@
+<title>Linga Payments Prototype</title>
+<meta name="description" content="Clickable prototype of the Linga back office with white-label payments onboarding.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap">
+<style>
+/* Layout: Linga back-office shell (74px top bar + 206px menu) around a centered 566px onboarding card, built from the Figma tokens.
+   Single light theme on purpose: it mirrors the Linga back office in Figma. */
+:root {
+  --page: #ffffff;
+  --heading: #1d1a1a;
+  --body: #322f2f;
+  --placeholder: #6a6a6a;
+  --muted: #5d6976;
+  --border: #e0e0e0;
+  --border-input: #adaaaa;
+  --action: #1b7ba2;
+  --action-text: #166282;
+  --selected: #a4cada;
+  --depression: #f2f0f0;
+  --elevation: #f7f9fd;
+  --badge: #f5f5f5;
+  --danger: #de1f1f;
+  --danger-bg: #fdecec;
+  --success: #2a7f05;
+  --upload: #008600;
+  --avatar: #6954ff;
+  --scrim: rgba(29, 26, 26, 0.48);
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-legacy: "Roboto", "Inter", system-ui, Arial, sans-serif;
+  --font-mono: Menlo, ui-monospace, "SFMono-Regular", Consolas, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--page); color: var(--body); font-family: var(--font); font-size: 14px; line-height: 20px; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+img { display: block; max-width: none; }
+:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+#app { height: 100%; }
+
+/* ---------- Start page ---------- */
+.start { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding-block: 56px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--elevation); }
+.start-inner { width: 100%; max-width: 980px; display: flex; flex-direction: column; gap: 32px; }
+.start-head { display: flex; flex-direction: column; gap: 12px; }
+.start-head h1 { margin: 0; font-size: 32px; line-height: 40px; color: var(--heading); text-wrap: balance; }
+.start-head p { margin: 0; font-size: 16px; line-height: 24px; max-width: 62ch; }
+.eyebrow { font-size: 12px; line-height: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--action-text); font-weight: 600; }
+.paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.path { display: flex; flex-direction: column; gap: 12px; text-align: left; padding: 24px; background: var(--page); border: 1px solid var(--border); border-radius: 16px; transition: border-color .15s, box-shadow .15s; }
+.path:hover { border-color: var(--action); box-shadow: 0 2px 8px rgba(27, 123, 162, .12); }
+.path h2 { margin: 0; font-size: 18px; line-height: 24px; color: var(--heading); }
+.path p { margin: 0; color: var(--body); }
+.path .meta { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 8px; }
+.path .go { font-weight: 600; color: var(--action-text); }
+.path .icon-dot { width: 44px; height: 44px; border-radius: 1000px; background: var(--depression); display: grid; place-items: center; }
+.pill { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 4px; font-size: 12px; line-height: 16px; background: var(--badge); color: var(--body); white-space: nowrap; }
+.pill.ready { background: #e6f2ea; color: #1d5e2a; }
+.pill.pending { background: #fff2e5; color: #994f01; }
+.start-note { font-size: 13px; color: var(--muted); }
+
+/* ---------- Shell ---------- */
+.shell { height: 100%; display: flex; flex-direction: column; }
+.topbar { flex: none; height: 74px; display: flex; align-items: center; padding-right: 20px; border-bottom: 1px solid var(--border); background: var(--page); }
+.collapse { width: 61px; height: 100%; display: grid; place-items: center; border-right: 1px solid var(--border); flex: none; }
+.brand { width: 171px; height: 74px; display: grid; place-items: center; flex: none; }
+.loc { display: flex; align-items: center; gap: 10px; padding-left: 11px; flex: none; }
+.loc-select { display: flex; align-items: center; justify-content: space-between; width: 252px; height: 39px; padding: 0 17px 0 12px; border: 1px solid var(--border-input); border-radius: 4px; font-size: 16px; line-height: 20px; color: var(--body); }
+.flex-space { flex: 1 1 0; min-width: 8px; }
+.actions { display: flex; align-items: center; gap: 16px; flex: none; }
+.search { display: flex; align-items: center; gap: 8px; width: 213px; height: 36px; padding: 0 9px 0 10px; border: 1px solid var(--action); border-radius: 4px; color: var(--muted); font-size: 16px; }
+.kbd { margin-left: auto; height: 22px; padding: 0 6px; display: flex; align-items: center; border: 1px solid #dddfe2; background: #f5f5f5; border-radius: 7px; font: 12px var(--font-legacy); color: var(--muted); white-space: nowrap; }
+.notif { position: relative; width: 36px; height: 36px; }
+.notif img { position: absolute; left: 0; top: -10px; }
+.sq { width: 36px; height: 36px; border: 1px solid var(--action); border-radius: 4px; display: grid; place-items: center; }
+.upgrade { height: 36px; width: 81px; border: 1px solid var(--action); border-radius: 4px; font: 500 14px var(--font-legacy); color: var(--action-text); }
+.upload { width: 36px; height: 36px; border-radius: 4px; background: var(--upload); display: grid; place-items: center; box-shadow: 2px 2px 3px rgba(0, 0, 0, .19); }
+.account { display: flex; align-items: center; gap: 10px; }
+.account .div { width: 1px; height: 40px; background: var(--border); }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--avatar); border: 1px solid #e3deff; color: #fff; display: grid; place-items: center; font: 500 20px var(--font-legacy); }
+.account .name { font: 12px var(--font-legacy); color: #111; width: 54px; }
+
+.body-row { flex: 1 1 auto; display: flex; min-height: 0; }
+.menu { flex: none; width: 207px; border-right: 1px solid var(--border); background: var(--page); overflow-y: auto; }
+.menu-group { display: flex; flex-direction: column; gap: 4px; padding: 4px 8px; }
+.menu-store { padding: 8px 16px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font: 14px var(--font-legacy); color: #000; }
+.menu-sep { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.mi { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 4px 0 8px; border-radius: 8px; width: 100%; text-align: left; font-size: 14px; line-height: 17px; letter-spacing: .1px; color: #000; }
+.mi:hover { background: var(--depression); }
+.mi.active { background: var(--selected); }
+.mi .lbl { flex: 1 1 auto; white-space: nowrap; }
+.shell.collapsed .menu { width: 61px; }
+.shell.collapsed .mi .lbl, .shell.collapsed .mi .chev, .shell.collapsed .menu-store { display: none; }
+.shell.collapsed .collapse img { transform: scaleX(-1); }
+
+.main { flex: 1 1 auto; min-width: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 32px 10px; gap: 16px; }
+.main > :first-child { margin-top: auto; }
+.main > :last-child { margin-bottom: auto; }
+
+/* ---------- Cards ---------- */
+.box { width: 566px; max-width: 100%; border: 1px solid var(--border); border-radius: 16px; padding: 32px; display: flex; flex-direction: column; gap: 24px; background: var(--page); }
+.box.tinted { background: var(--elevation); }
+.box.center { align-items: center; text-align: center; }
+.title-l { margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; color: var(--heading); text-wrap: balance; }
+.body-m { margin: 0; font-size: 16px; line-height: 20px; color: var(--body); }
+.features { display: flex; flex-direction: column; gap: 20px; padding: 0 32px; }
+.feature { display: flex; align-items: center; gap: 16px; }
+.feature .icon-dot { width: 44px; height: 44px; border-radius: 1000px; background: var(--depression); display: grid; place-items: center; flex: none; }
+.feature b { display: block; color: var(--heading); font-size: 14px; line-height: 17px; margin-bottom: 4px; }
+.feature span { font-size: 14px; line-height: 17px; }
+.btn-big { height: 48px; width: 100%; border-radius: 8px; background: var(--action); color: #fff; font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: .1px; }
+.btn-big:hover { background: #166282; }
+.legal { font-size: 14px; line-height: 17px; color: #000; }
+.legal button { text-decoration: underline; color: #000; }
+
+/* ---------- Embedded onboarding ---------- */
+.close-row { display: flex; justify-content: flex-end; }
+.xbtn { width: 36px; height: 36px; border: 1px solid var(--border-input); border-radius: 4px; display: grid; place-items: center; }
+.xbtn:hover { background: var(--depression); }
+.form { display: flex; flex-direction: column; gap: 40px; padding: 4px; }
+.form.tight { gap: 24px; }
+.ob-head { display: flex; flex-direction: column; gap: 24px; }
+.progress { position: relative; align-self: flex-start; }
+.progress-btn { display: flex; align-items: center; gap: 6px; border-radius: 8px; padding: 2px 4px 2px 0; font-weight: 600; color: var(--heading); }
+.progress-btn:hover { background: var(--depression); }
+.progress-menu { position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; width: 240px; background: var(--page); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(29, 26, 26, .12); padding: 6px; display: flex; flex-direction: column; }
+.progress-menu button { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; text-align: left; }
+.progress-menu button:hover:not(:disabled) { background: var(--depression); }
+.progress-menu button:disabled { cursor: default; color: var(--placeholder); }
+.progress-menu .cur { font-weight: 600; color: var(--heading); }
+.step-dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #c9ced4; flex: none; display: grid; place-items: center; }
+.step-dot.done { background: var(--action); border-color: var(--action); }
+.step-dot.cur { border-color: var(--action); border-width: 4px; }
+.h-xl { margin: 0; font-size: 28px; line-height: 36px; letter-spacing: .42px; font-weight: 700; color: var(--heading); text-wrap: balance; }
+.p-md { margin: 0; font-size: 16px; line-height: 24px; color: var(--body); }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.lbl-t { font-weight: 600; font-size: 14px; line-height: 20px; color: var(--heading); }
+.in, .sel, .ta { width: 100%; min-height: 38px; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--page); font: 14px/20px var(--font); color: var(--heading); }
+.in::placeholder, .ta::placeholder { color: var(--placeholder); }
+.in:focus, .sel:focus, .ta:focus { outline: none; border-color: #0196ed; box-shadow: 0 0 0 3px rgba(1, 150, 237, .25); }
+.invalid, .invalid:focus { border-color: var(--danger) !important; }
+.invalid:focus { box-shadow: 0 0 0 3px rgba(222, 31, 31, .2); }
+.sel { appearance: none; -webkit-appearance: none; padding-right: 28px; background-image: url("assets/icons/arrow-up-down.svg"); background-repeat: no-repeat; background-position: right 9px center; background-size: 12px 12px; cursor: pointer; }
+.sel.strong { font-weight: 600; }
+.sel.ph { color: var(--heading); }
+.ta { min-height: 117px; padding: 4px 8px; resize: vertical; }
+.in.dob { width: 158px; padding: 4px 8px; min-height: 30px; }
+.help { margin: 0; padding-top: 4px; font-size: 14px; line-height: 20px; color: var(--body); }
+.help .lnk, .lnk { color: var(--action-text); font-weight: 600; }
+.err { margin: 0; font-size: 12px; line-height: 16px; color: var(--danger); }
+.phone { display: flex; align-items: center; min-height: 30px; border: 1px solid var(--border); border-radius: 4px; background: var(--page); overflow: hidden; }
+.phone:focus-within { border-color: #0196ed; box-shadow: 0 0 0 3px rgba(1, 150, 237, .25); }
+.phone.invalid:focus-within { box-shadow: 0 0 0 3px rgba(222, 31, 31, .2); }
+.phone .cc { display: flex; align-items: center; gap: 6px; padding: 4px 8px; flex: none; }
+.phone .pre { padding-left: 8px; color: var(--heading); flex: none; }
+.phone input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; padding: 4px 8px 4px 6px; font: 14px/20px var(--font); color: var(--heading); background: transparent; }
+.phone input::placeholder { color: var(--placeholder); }
+.btns { display: flex; flex-direction: column; gap: 6px; }
+.btn { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--action); font-weight: 600; font-size: 14px; line-height: 20px; }
+.btn.primary { background: var(--action); color: #fff; }
+.btn.primary:hover { background: #166282; }
+.btn.secondary { background: var(--page); color: var(--action-text); }
+.btn.secondary:hover { background: #f1f7fa; }
+.btn[aria-busy="true"] { opacity: .75; cursor: progress; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; border-radius: 50%; vertical-align: -2px; margin-right: 8px; animation: spin .8s linear infinite; }
+.spinner.dark { border-color: rgba(27, 123, 162, .25); border-top-color: var(--action); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 8px; background: var(--danger-bg); color: #8f1414; border: 1px solid #f5c2c2; }
+.banner b { color: #8f1414; }
+
+/* Payout */
+.bank-search { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
+.bank-search input { flex: 1; border: 0; outline: 0; font: 14px/20px var(--font); color: var(--heading); min-width: 0; }
+.bank-search input::placeholder { color: var(--placeholder); }
+.bank-search:focus-within { border-color: #0196ed; box-shadow: 0 0 0 3px rgba(1, 150, 237, .25); }
+.banks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.bank { position: relative; height: 74px; border: 1px solid rgba(60, 66, 87, .12); border-radius: 4px; background: var(--page); box-shadow: 0 2px 5px rgba(48, 49, 61, .08), 0 1px 1px rgba(0, 0, 0, .12); display: grid; place-items: center; overflow: hidden; }
+.bank:hover { border-color: var(--action); }
+.bank.sel-on { border: 2px solid var(--action); }
+.bank .chk { position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--action); display: grid; place-items: center; }
+.bank-empty { grid-column: 1 / -1; padding: 12px; text-align: center; color: var(--body); border: 1px dashed var(--border); border-radius: 4px; }
+.linkbtn { align-self: flex-start; color: var(--action-text); font-size: 14px; line-height: 20px; }
+.linkbtn:hover { text-decoration: underline; }
+.manual { display: flex; flex-direction: column; gap: 16px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; }
+.manual-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.selected-acct { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; background: #f1f7fa; border: 1px solid #cfe3ec; }
+.selected-acct .t { flex: 1; min-width: 0; }
+
+/* Statement preview */
+.stmt { position: relative; padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 8px; background: url("assets/icons/stmt-bg.svg") no-repeat 0 0 / 100% 100%; font: 11px/16px var(--font-mono); color: var(--body); margin-top: 4px; }
+.stmt .row { display: flex; align-items: center; gap: 12px; }
+.stmt .bar { height: 12px; background: var(--badge); border-bottom: 1px solid var(--border); flex: none; }
+.stmt .rule { height: 0; border-top: 1px solid var(--border); }
+.stmt .grow { flex: 1; min-width: 0; }
+.stmt .hl { color: var(--action-text); text-transform: uppercase; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stmt .amt-strong { color: var(--heading); }
+
+/* Review */
+.sec { display: flex; flex-direction: column; gap: 8px; }
+.sec-title { display: flex; align-items: flex-end; gap: 8px; }
+.sec-title p { flex: 1; margin: 0; font-weight: 600; font-size: 16px; line-height: 24px; color: var(--heading); }
+.rcard { border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.rcard-head { display: flex; align-items: center; gap: 12px; }
+.rcard-head p { flex: 1; margin: 0; font-weight: 600; color: var(--heading); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.edit { color: var(--action-text); font-size: 14px; line-height: 20px; }
+.edit:hover { text-decoration: underline; }
+.rrow { display: flex; flex-wrap: wrap; gap: 0 12px; }
+.rrow .k { width: 150px; color: var(--body); }
+.rrow .v { flex: 1 0 0; min-width: min(296px, 100%); color: var(--heading); overflow-wrap: anywhere; }
+.payout { display: flex; gap: 16px; align-items: flex-start; }
+.payout .logo40 { width: 40px; height: 40px; border-radius: 4px; overflow: hidden; flex: none; border: 1px solid var(--border); display: grid; place-items: center; background: var(--page); }
+.payout .logo40.flush { border: 0; }
+.payout .logo40 img.bank-mini { width: 38px; height: auto; }
+.payout .c { flex: 1; min-width: 0; }
+.payout .tl { display: flex; align-items: center; gap: 12px; }
+.payout .tl p { flex: 1; margin: 0; font-weight: 600; color: var(--heading); }
+.mono { font-family: var(--font-mono); }
+.disclaimer { display: flex; flex-direction: column; gap: 10px; color: var(--body); }
+.disclaimer p { margin: 0; }
+.disclaimer ul { margin: 0; padding-left: 21px; }
+.disclaimer li button { text-decoration: underline; color: var(--body); }
+.more-btn { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 4px; }
+.more-btn:hover { background: var(--depression); }
+
+/* Confirmation */
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.btn-sec { min-height: 37px; padding: 10px 16px; border: 1px solid var(--border-input); border-radius: 8px; background: var(--page); font-weight: 500; font-size: 14px; line-height: 17px; letter-spacing: .1px; color: var(--heading); }
+.btn-sec:hover { background: var(--depression); }
+.btn-out { padding: 10px 16px; border: 1px solid var(--action); border-radius: 8px; font-weight: 500; font-size: 14px; line-height: 17px; letter-spacing: .1px; color: var(--action-text); }
+.btn-out:hover { background: #f1f7fa; }
+.btn-txt { padding: 10px 16px; border-radius: 8px; font-weight: 500; font-size: 14px; line-height: 17px; color: var(--action-text); }
+.btn-txt:hover { background: #eaf3f7; }
+.stack-c { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+/* Pending pages */
+.pending-card { width: 566px; max-width: 100%; border: 1px dashed var(--border-input); border-radius: 16px; padding: 32px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.pending-card h1 { margin: 0; font-size: 24px; line-height: 30px; color: var(--heading); }
+.pending-card p { margin: 0; font-size: 15px; line-height: 22px; }
+
+/* ---------- Modals ---------- */
+.scrim { position: fixed; inset: 0; z-index: 50; background: var(--scrim); display: grid; place-items: center; padding: 16px; }
+.dialog { width: 670px; max-width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 8px; font-family: var(--font-legacy); color: #000; }
+.dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 30px 30px 0; }
+.dialog-head h2 { margin: 0; font-weight: 500; font-size: 24px; line-height: 28px; }
+.dialog-close { display: flex; align-items: center; gap: 8px; font-size: 18px; line-height: 21px; color: #000; }
+.dialog-body { padding: 20px 30px 30px; font-size: 16px; line-height: 24px; border-bottom: 1px solid var(--border); }
+.dialog-foot { display: flex; justify-content: space-between; gap: 12px; padding: 20px 30px; }
+.lg-btn { padding: 10px 14px; border-radius: 4px; font: 500 14px/16px var(--font-legacy); letter-spacing: .5px; text-transform: uppercase; }
+.lg-btn.out { border: 1px solid var(--action); color: var(--action-text); }
+.lg-btn.fill { background: var(--action); color: #fff; box-shadow: 2px 2px 1.5px rgba(0, 0, 0, .16); }
+.connect { width: 440px; max-width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 20px 48px rgba(29, 26, 26, .25); overflow: hidden; font-family: var(--font); }
+.connect-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.connect-head .brandmini { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--heading); }
+.connect-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.connect-body h3 { margin: 0; font-size: 20px; line-height: 26px; color: var(--heading); }
+.acct { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.acct:has(input:checked) { border-color: var(--action); background: #f1f7fa; }
+.acct input { accent-color: var(--action); width: 16px; height: 16px; margin: 0; }
+.acct .t { flex: 1; }
+.acct .t b { display: block; color: var(--heading); font-weight: 600; }
+.secure { font-size: 12px; line-height: 16px; color: var(--muted); }
+.connecting { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+
+/* Toast + prototype controls */
+.toast { position: fixed; z-index: 70; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: #1d1a1a; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
+.proto { position: fixed; z-index: 60; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.proto-toggle { padding: 8px 12px; border-radius: 999px; background: #1d1a1a; color: #fff; font-size: 12px; font-weight: 600; letter-spacing: .04em; box-shadow: 0 4px 14px rgba(0, 0, 0, .2); }
+.proto-panel { width: 260px; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, .15); padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.proto-panel button, .proto-panel label { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; text-align: left; font-size: 13px; color: var(--heading); cursor: pointer; }
+.proto-panel button:hover, .proto-panel label:hover { background: var(--depression); }
+.proto-panel .cap { padding: 6px 8px 2px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.proto-panel input { accent-color: var(--action); margin: 0; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1180px) { .search, .upgrade { display: none; } }
+@media (max-width: 900px) {
+  .loc-select { width: 170px; }
+  .menu { position: fixed; z-index: 40; top: 74px; bottom: 0; left: 0; transform: translateX(-100%); transition: transform .2s; box-shadow: 4px 0 16px rgba(0, 0, 0, .1); }
+  .shell.menu-open .menu { transform: none; }
+  .shell.collapsed .menu { width: 207px; }
+  .shell.collapsed .mi .lbl, .shell.collapsed .menu-store { display: revert; }
+  .paths { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .brand { width: 110px; }
+  .loc, .sq, .upload, .account .name, .account .div { display: none; }
+  .actions { gap: 10px; }
+  .topbar { padding-right: 12px; }
+  .main { padding: 16px max(16px, env(safe-area-inset-left, 0px)); }
+  .box { padding: 20px; }
+  .features { padding: 0; }
+  .banks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dialog-head, .dialog-body, .dialog-foot { padding-left: 20px; padding-right: 20px; }
+}
+</style>
+
+<div id="app"></div>
+<div id="layer"></div>
+
+<script>
+(() => {
+'use strict';
+const ICON = 'assets/icons/';
+const BANKS_DIR = 'assets/banks/';
+const ic = (n, w, h, cls) => `<img src="${ICON}${n}.svg" width="${w}" height="${h || w}" alt=""${cls ? ` class="${cls}"` : ''}>`;
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const BANKS = [
+  { id: 'pnc', name: 'PNC' }, { id: 'hsbc', name: 'HSBC' }, { id: 'mercury', name: 'Mercury' },
+  { id: 'td', name: 'TD Bank' }, { id: 'schwab', name: 'Charles Schwab' }, { id: 'citi', name: 'Citibank' },
+  { id: 'wellsfargo', name: 'Wells Fargo' }, { id: 'usaa', name: 'USAA' }, { id: 'usbank', name: 'U.S. Bank' },
+  { id: 'boa', name: 'Bank of America' }, { id: 'chase', name: 'Chase' }, { id: 'capitalone', name: 'Capital One' },
+];
+const STATES = [['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']];
+const INDUSTRIES = ['Restaurants and nightlife', 'Fast food restaurants', 'Bars and nightclubs', 'Caterers', 'Bakeries and coffee shops', 'Grocery stores', 'Food trucks', 'Retail – clothing and accessories', 'Retail – general merchandise', 'Beauty and personal care', 'Professional services'];
+const BUSINESS_TYPES = ['Individual', 'Company', 'Non-profit organization', 'Government entity'];
+
+const defaults = () => ({
+  country: 'United States', businessType: 'Individual',
+  firstName: 'John', lastName: 'Parker', email: 'john.parker@naplesstore.com', dob: '04 / 24 / 1986',
+  addrCountry: 'United States', street: '1250 5th Ave S', unit: 'Suite 200', city: 'Naples', state: 'FL', zip: '34102', phone: '(239) 555-0147',
+  industry: 'Restaurants and nightlife', website: 'www.naplesstore.com',
+  description: 'Full-service restaurant and bar in downtown Naples. Guests pay for dine-in meals, drinks and takeout orders at the counter or at the table.',
+  bank: 'wellsfargo', bankAcct: 'Everyday Checking', bankLast4: '1234',
+  manual: false, holder: 'John Parker', routing: '110000000', account: '000123451234', account2: '000123451234',
+  descriptor: 'NAPLES STORE', supportPhone: '(239) 555-0100',
+});
+
+const S = {
+  d: defaults(), errors: {}, done: new Set(), completed: false, returnToReview: false,
+  modal: null, progressOpen: false, collapsed: false, menuOpen: false,
+  failNext: false, submitting: false, submitError: '', protoOpen: false,
+};
+
+const FLOW = ['business-type', 'personal', 'business', 'payout', 'public', 'review'];
+const LABEL = { 'business-type': 'Business type', personal: 'Personal details', business: 'Business details', payout: 'Payout details', public: 'Public details', review: 'Review and submit' };
+const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'freestanding'];
+
+const route = () => { const h = location.hash.replace('#', ''); return ROUTES.includes(h) ? h : 'start'; };
+const go = (r) => { S.errors = {}; S.progressOpen = false; S.menuOpen = false; S.submitError = ''; if (location.hash === '#' + r) render(); else location.hash = r; };
+
+/* ---------- Helpers for form fields ---------- */
+const inv = (e, k) => (S.errors[e] && (!S.errors._field || e !== 'address' || S.errors._field === k) ? ' invalid' : '');
+const errP = (k) => (S.errors[k] ? `<p class="err" id="err-${k}" role="alert">${esc(S.errors[k])}</p>` : '');
+const described = (e, k = e) => (inv(e, k) ? ` aria-invalid="true" aria-describedby="err-${k}"` : '');
+const input = (k, { ph = '', e = k, cls = '', type = 'text', mode = '', auto = '', label = '' } = {}) =>
+  `<input id="f-${k}" class="in${cls ? ' ' + cls : ''}${inv(e, k)}" data-k="${k}" data-e="${e}" type="${type}" value="${esc(S.d[k])}" placeholder="${esc(ph)}"${mode ? ` inputmode="${mode}"` : ''}${auto ? ` autocomplete="${auto}"` : ''}${label ? ` aria-label="${esc(label)}"` : ''}${described(e, k)}>`;
+const select = (k, options, { e = k, strong = false, placeholder = '', label = '' } = {}) => {
+  const opts = (placeholder ? `<option value="">${esc(placeholder)}</option>` : '') +
+    options.map((o) => { const [v, t] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(v)}"${S.d[k] === v ? ' selected' : ''}>${esc(t)}</option>`; }).join('');
+  return `<select id="f-${k}" class="sel${strong ? ' strong' : ''}${inv(e, k)}" data-k="${k}" data-e="${e}"${label ? ` aria-label="${esc(label)}"` : ''}${described(e, k)}>${opts}</select>`;
+};
+const phone = (k, label) => `
+  <div class="phone${inv(k)}" data-e="${k}">
+    <span class="cc">US ${ic('arrow-up-down', 12)}</span>
+    <span class="pre">+1</span>
+    <input id="f-${k}" data-k="${k}" data-e="${k}" data-fmt="phone" type="tel" inputmode="tel" autocomplete="tel-national" value="${esc(S.d[k])}" placeholder="(201) 555-0123" aria-label="${esc(label)}"${described(k)}>
+  </div>`;
+
+const ring = (pct) => {
+  const c = 53.41, len = Math.max(4, c * pct);
+  return `<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" fill="none" stroke="#D8DEE4" stroke-width="3"/><circle cx="10" cy="10" r="8.5" fill="none" stroke="#1B7BA2" stroke-width="3" stroke-linecap="round" stroke-dasharray="${len.toFixed(2)} ${c}" transform="rotate(-90 10 10)"/></svg>`;
+};
+
+const obHeader = (step, title, desc) => {
+  const i = FLOW.indexOf(step);
+  const menu = S.progressOpen ? `<div class="progress-menu" role="menu">${FLOW.map((s, j) => {
+    const done = S.done.has(s), cur = s === step, reachable = done || cur || FLOW.slice(0, j).every((p) => S.done.has(p));
+    return `<button role="menuitem" data-goto="${s}" ${reachable ? '' : 'disabled'} class="${cur ? 'cur' : ''}"><span class="step-dot${done && !cur ? ' done' : ''}${cur ? ' cur' : ''}">${done && !cur ? '<svg width="9" height="9" viewBox="0 0 10 10"><path d="M1.5 5.2 4 7.6 8.6 2.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>${LABEL[s]}</button>`;
+  }).join('')}</div>` : '';
+  return `
+    <div class="ob-head">
+      <div class="progress">
+        <button class="progress-btn" data-act="progress" aria-expanded="${S.progressOpen}" aria-haspopup="menu">${ring((i + 1) / (FLOW.length))}<span>${LABEL[step]}</span>${ic('chevron-down', 8)}</button>
+        ${menu}
+      </div>
+      <div><h1 class="h-xl">${title}</h1><p class="p-md">${desc}</p></div>
+    </div>`;
+};
+const footer = (primary = 'Continue', back = true) => `
+  <div class="btns">
+    <button class="btn primary" data-act="continue">${primary}</button>
+    ${back ? '<button class="btn secondary" data-act="back">Back</button>' : ''}
+  </div>`;
+const legal = `<div class="legal"><button data-toast="Privacy Policy opens on linga.com in the live product.">Privacy Policy</button> and <button data-toast="Terms &amp; Conditions open on linga.com in the live product.">Terms &amp; Conditions</button></div>`;
+const embedded = (inner) => `
+  <section class="box" aria-label="Payments onboarding">
+    <div class="close-row"><button class="xbtn" data-act="close" aria-label="Close onboarding">${ic('close', 24)}</button></div>
+    ${inner}
+    ${legal}
+  </section>`;
+
+/* ---------- Screens ---------- */
+const screens = {
+  payments: () => `
+    <section class="box">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <h1 class="title-l">Accept payments</h1>
+        <p class="body-m">Take payments at your counter, track all your transactions, and get paid out faster.</p>
+      </div>
+      <div class="features">
+        <div class="feature"><div class="icon-dot">${ic('feat-wallet', 24)}</div><div><b>Take every payment</b><span>Accept cards, tap to pay, and digital wallets like Apple Pay and Google Pay.</span></div></div>
+        <div class="feature"><div class="icon-dot">${ic('feat-chart', 24)}</div><div><b>Track every sale</b><span>See sales, tips, and refunds in real time, all in one place.</span></div></div>
+        <div class="feature"><div class="icon-dot">${ic('feat-bolt', 24)}</div><div><b>Get paid faster</b><span>Money moves to your bank quickly, with no waiting on weekly batches.</span></div></div>
+      </div>
+      <button class="btn-big" data-goto="business-type">Get started</button>
+      ${legal}
+    </section>`,
+
+  'business-type': () => embedded(`
+    <div class="form">
+      ${obHeader('business-type', "Let's start with some basics", 'Choose your location and business type to get started.')}
+      <div class="field"><label class="lbl-t" for="f-country">Business location</label>${select('country', ['United States'])}${errP('country')}</div>
+      <div class="field"><label class="lbl-t" for="f-businessType">Business type</label>${select('businessType', BUSINESS_TYPES, { placeholder: 'Select a business type…' })}${errP('businessType')}
+        <p class="help">If you have not filed paperwork to register as a business entity, then your business type is likely to be Individual. Not sure which option to select? <button class="lnk" data-toast="Opens the Linga support article on business types.">Refer to this support article</button></p></div>
+      ${footer('Continue', false)}
+    </div>`),
+
+  personal: () => embedded(`
+    <div class="form">
+      ${obHeader('personal', 'Verify your personal details', 'This information is collected to verify your identity and keep your account safe.')}
+      <div class="field" role="group" aria-labelledby="lb-name"><span class="lbl-t" id="lb-name">Your legal name</span>
+        ${input('firstName', { ph: 'First name', e: 'name', auto: 'given-name', label: 'First name' })}
+        ${input('lastName', { ph: 'Last name', e: 'name', auto: 'family-name', label: 'Last name' })}
+        ${errP('name')}</div>
+      <div class="field"><label class="lbl-t" for="f-email">Email address</label>${input('email', { ph: 'email@example.com', type: 'email', auto: 'email' })}${errP('email')}</div>
+      <div class="field"><label class="lbl-t" for="f-dob">Date of birth</label>${input('dob', { ph: 'MM / DD / YYYY', cls: 'dob', mode: 'numeric', auto: 'bday' }).replace('<input', '<input data-fmt="dob"')}${errP('dob')}</div>
+      <div class="field" role="group" aria-labelledby="lb-addr"><span class="lbl-t" id="lb-addr">Address</span>
+        ${select('addrCountry', ['United States'], { e: 'address', strong: true, label: 'Country' })}
+        ${input('street', { ph: 'Street address', e: 'address', auto: 'address-line1', label: 'Street address' })}
+        ${input('unit', { ph: 'Apartment, unit, or other', e: 'address-unit', auto: 'address-line2', label: 'Apartment, unit, or other' })}
+        ${input('city', { ph: 'City', e: 'address', auto: 'address-level2', label: 'City' })}
+        ${select('state', STATES, { e: 'address', strong: true, placeholder: 'State', label: 'State' })}
+        ${input('zip', { ph: 'Zip code', e: 'address', mode: 'numeric', auto: 'postal-code', label: 'Zip code' })}
+        ${errP('address')}</div>
+      <div class="field"><span class="lbl-t">Phone number</span>${phone('phone', 'Phone number')}${errP('phone')}</div>
+      ${footer()}
+    </div>`),
+
+  business: () => embedded(`
+    <div class="form">
+      ${obHeader('business', 'Business details', 'Tell us a few details about how you earn money.')}
+      <div class="field"><label class="lbl-t" for="f-industry">Industry</label>${select('industry', INDUSTRIES, { strong: true, placeholder: 'Please select your industry...' })}${errP('industry')}
+        <p class="help">Selecting your industry helps satisfy risk and compliance obligations. Select the option that best matches the goods or service your customers will buy.</p></div>
+      <div class="field"><label class="lbl-t" for="f-website">Business website</label>${input('website', { ph: 'www.business.site', type: 'url', auto: 'url' })}${errP('website')}
+        <p class="help"><button class="lnk" data-toast="Your website should list what you sell, prices, contact details and a refund policy.">Learn more</button> about what information must appear on your business website.</p></div>
+      <div class="field"><label class="lbl-t" for="f-description">Product description</label>
+        <textarea id="f-description" class="ta${inv('description')}" data-k="description" data-e="description" placeholder="I sell items"${described('description')}>${esc(S.d.description)}</textarea>${errP('description')}</div>
+      ${footer()}
+    </div>`),
+
+  payout: () => {
+    const d = S.d;
+    const tiles = BANKS.map((b) => `<button class="bank${!d.manual && d.bank === b.id ? ' sel-on' : ''}" data-bank="${b.id}" data-name="${esc(b.name.toLowerCase())}" aria-label="${esc(b.name)}" aria-pressed="${!d.manual && d.bank === b.id}">
+        <img src="${BANKS_DIR}bank-${b.id}.svg" width="88" height="40" alt="">
+        ${!d.manual && d.bank === b.id ? '<span class="chk"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5.2 4 7.6 8.6 2.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : ''}
+      </button>`).join('');
+    const bank = BANKS.find((b) => b.id === d.bank);
+    const selected = !d.manual && bank ? `<div class="selected-acct">${ic('stmt-bank', 14)}<div class="t"><b style="color:var(--heading)">${esc(bank.name)}</b> · ${esc(d.bankAcct)} <span class="mono">••••${esc(d.bankLast4)}</span></div><button class="edit" data-bank="${bank.id}">Change</button></div>` : '';
+    const manual = d.manual ? `
+      <div class="manual">
+        <div class="manual-head"><span class="lbl-t">Enter bank details</span><button class="linkbtn" data-act="manual-off">Search for your bank instead</button></div>
+        <div class="field"><label class="lbl-t" for="f-holder">Account holder name</label>${input('holder', { auto: 'name' })}${errP('holder')}</div>
+        <div class="field"><label class="lbl-t" for="f-routing">Routing number</label>${input('routing', { ph: '110000000', mode: 'numeric' })}${errP('routing')}</div>
+        <div class="field"><label class="lbl-t" for="f-account">Account number</label>${input('account', { ph: '000123456789', mode: 'numeric' })}${errP('account')}</div>
+        <div class="field"><label class="lbl-t" for="f-account2">Confirm account number</label>${input('account2', { ph: '000123456789', mode: 'numeric' })}${errP('account2')}</div>
+      </div>` : '';
+    return embedded(`
+    <div class="form">
+      ${obHeader('payout', 'Select an account for payouts', 'Earnings you receive will be sent to this account.')}
+      <div class="field" style="gap:16px">
+        ${d.manual ? '' : `
+        <label class="bank-search"><span class="sr" hidden>Search for your bank</span>${ic('search', 12)}<input id="f-banksearch" type="search" placeholder="Search for your bank" aria-label="Search for your bank"></label>
+        <div class="banks" id="bank-grid">${tiles}<p class="bank-empty" id="bank-empty" hidden>No banks match your search. Enter your bank details manually.</p></div>
+        ${selected}
+        <button class="linkbtn" data-act="manual-on">Enter bank details manually</button>`}
+        ${manual}
+        ${errP('payout')}
+      </div>
+      ${footer()}
+    </div>`);
+  },
+
+  public: () => embedded(`
+    <div class="form">
+      ${obHeader('public', 'Add public details for customers', 'This information may be visible in payment statements, invoices, and receipts.')}
+      <div class="field"><label class="lbl-t" for="f-descriptor">Statement descriptor</label>${input('descriptor', { ph: 'Example' }).replace('<input', '<input maxlength="22"')}${errP('descriptor')}
+        <div class="stmt" aria-hidden="true">
+          <div class="row">${ic('stmt-bank', 14)}<span class="bar" style="width:66px"></span></div>
+          <div class="rule"></div>
+          <div class="row"><span class="grow"><span class="bar" style="display:block;width:66px"></span></span><span>$20.00</span></div>
+          <div class="row"><span class="hl" id="stmt-live">${esc(S.d.descriptor || 'Example')}</span><span class="amt-strong">$340.00</span></div>
+          <div class="row"><span class="grow" style="display:flex;gap:12px"><span class="bar" style="width:87px"></span><span class="bar" style="width:87px"></span></span><span>$63.00</span></div>
+        </div>
+        <p class="help">Your statement descriptor shows up on your customers’ bank or credit card statements. It should be 5-22 characters.</p></div>
+      <div class="field"><span class="lbl-t">Customer support phone number</span>${phone('supportPhone', 'Customer support phone number')}${errP('supportPhone')}
+        <p class="help">This phone number and address can be optionally surfaced on payment statements, invoices and receipts if you use Linga Payments. You can control the visibility of this information and update this information at any time in settings.</p></div>
+      ${footer()}
+    </div>`),
+
+  review: () => {
+    const d = S.d;
+    const addr = `${esc(d.street)}${d.unit ? ', ' + esc(d.unit) : ''}<br>${esc(d.city)}, ${esc(d.state)} ${esc(d.zip)} US`;
+    const bizName = d.businessType === 'Individual' ? `${esc(d.firstName)} ${esc(d.lastName)}` : 'Naples Store, LLC';
+    const bank = BANKS.find((b) => b.id === d.bank);
+    const payout = d.manual
+      ? { logo: `<div class="logo40">${ic('stmt-bank', 18)}</div>`, name: 'Bank account', num: `⑆ ${esc(d.routing)} ⑆ ••••${esc(String(d.account).slice(-4))}` }
+      : d.bank === 'wellsfargo'
+        ? { logo: `<div class="logo40 flush">${ic('wellsfargo-square', 40)}</div>`, name: 'Wells Fargo', num: `⑆ 110000000 ⑆ ••••${esc(d.bankLast4)}` }
+        : { logo: `<div class="logo40"><img class="bank-mini" src="${BANKS_DIR}bank-${bank.id}.svg" width="38" alt=""></div>`, name: esc(bank.name), num: `⑆ 110000000 ⑆ ••••${esc(d.bankLast4)}` };
+    const banner = S.submitError ? `<div class="banner" role="alert"><div><b>We couldn’t submit your details.</b> ${esc(S.submitError)}</div></div>` : '';
+    return embedded(`
+    <div class="form tight">
+      <div><h1 class="h-xl">Review and submit</h1><p class="p-md">Take a moment to review your information.</p></div>
+      ${banner}
+      <div class="sec"><div class="sec-title"><p>Business details</p></div>
+        <div class="rcard">
+          <div class="rcard-head"><p>${bizName}</p><button class="edit" data-edit="business">Edit</button></div>
+          <div class="rrow"><span class="k">Business type</span><span class="v">${esc(d.businessType)}</span></div>
+          <div class="rrow"><span class="k">Website</span><span class="v">${esc(d.website ? (d.website.startsWith('http') ? d.website : 'https://' + d.website) : 'Not provided')}</span></div>
+          <div class="rrow"><span class="k">Address</span><span class="v">${addr}</span></div>
+          <div class="rrow"><span class="k">Phone</span><span class="v">${esc(d.phone)}</span></div>
+          <div class="rrow"><span class="k">Other information provided</span><span class="v">Industry, Product description</span></div>
+        </div></div>
+      <div class="sec"><div class="sec-title"><p>Public details</p></div>
+        <div class="rcard">
+          <div class="rcard-head"><p>Customer support information</p><button class="edit" data-edit="public">Edit</button></div>
+          <div class="rrow"><span class="k">Statement descriptor</span><span class="v mono">${esc(String(d.descriptor).toUpperCase())}</span></div>
+          <div class="rrow"><span class="k">Support address</span><span class="v">${addr}</span></div>
+          <div class="rrow"><span class="k">Support phone</span><span class="v">${esc(d.supportPhone)}</span></div>
+        </div></div>
+      <div class="sec"><div class="sec-title"><p>Management and ownership</p><button class="edit" data-toast="Adding more owners isn’t part of this prototype yet.">Add</button></div>
+        <div class="rcard">
+          <div class="rcard-head"><p>${esc(d.firstName)} ${esc(d.lastName)}</p><span class="pill">Verifying</span><button class="edit" data-edit="personal">Edit</button></div>
+          <div class="rrow"><span class="k">Title</span><span class="v">Account representative, CEO, and owner</span></div>
+          <div class="rrow"><span class="k">Email</span><span class="v">${esc(d.email)}</span></div>
+          <div class="rrow"><span class="k">Date of birth</span><span class="v">${esc(prettyDob(d.dob))}</span></div>
+          <div class="rrow"><span class="k">Address</span><span class="v">${addr}</span></div>
+          <div class="rrow"><span class="k">Other information provided</span><span class="v">Phone</span></div>
+        </div></div>
+      <div class="sec"><div class="sec-title"><p>Payout details</p></div>
+        <div class="rcard payout">
+          ${payout.logo}
+          <div class="c">
+            <div class="tl"><p>${payout.name}</p><span class="pill">Default</span><button class="more-btn" data-edit="payout" aria-label="Change payout account">${ic('more', 16)}</button></div>
+            <div class="mono" style="font-size:14px">${payout.num}</div>
+            <div>USD, Instant-eligible</div>
+          </div>
+        </div>
+        <div class="btns">
+          <button class="btn secondary" data-edit="payout">Add bank account</button>
+          <button class="btn secondary" data-toast="Debit card payouts aren’t part of this prototype yet.">Add debit card</button>
+        </div></div>
+      <div class="disclaimer">
+        <p>By clicking <b>Agree and submit</b> you certify that information you have provided is complete and correct, and you agree to the following:</p>
+        <ul>${['Account agreement', 'Fee disclosure agreement', 'Data collection agreement', 'Privacy policy', 'Terms and conditions'].map((t) => `<li><button data-toast="${t} opens in a new tab in the live product.">${t}</button></li>`).join('')}</ul>
+      </div>
+      <div class="btns"><button class="btn primary" data-act="submit"${S.submitting ? ' aria-busy="true" disabled' : ''}>${S.submitting ? '<span class="spinner"></span>Submitting…' : 'Agree and submit'}</button></div>
+    </div>`);
+  },
+
+  done: () => `
+    <section class="box center" style="gap:0">
+      <div class="stack-c">
+        ${ic('success-icon', 72)}
+        <h1 class="title-l">You’re ready to take payments</h1>
+        <p class="body-m">Your processing account is active.</p>
+        <div class="btn-row" style="padding-top:4px">
+          <button class="btn-sec" data-goto="manage">View payouts</button>
+          <button class="btn-sec" data-goto="manage">Manage account</button>
+        </div>
+      </div>
+    </section>
+    <section class="box tinted center" style="gap:12px">
+      <h2 class="title-l" style="max-width:441px">Congrats, you qualify for 0% and $0 processing</h2>
+      <p class="body-m">Naples store pays no processing fees on card sales for the first 90 days, up to $50,000 in volume. After that, standard Linga Payments rates apply.</p>
+      <div class="stack-c" style="gap:0">
+        <button class="btn-out" data-toast="Walkthrough of the 0% processing offer opens here.">See how it works</button>
+        <button class="btn-txt" data-toast="The fee disclosure agreement opens here.">View fee disclosure agreement</button>
+      </div>
+    </section>`,
+
+  manage: () => `
+    <section class="pending-card">
+      <span class="pill pending">Design pending</span>
+      <h1>Manage payments</h1>
+      <p>Payouts, transactions and account settings go here once the Manage designs are ready in Figma.</p>
+      <p style="color:var(--muted)">${S.completed ? 'Onboarding is complete for Naples store.' : 'Onboarding isn’t finished for Naples store yet.'}</p>
+      <div class="btn-row" style="justify-content:flex-start">
+        <button class="btn-out" data-goto="start">Back to start page</button>
+        ${S.completed ? '' : '<button class="btn-txt" data-goto="payments">Set up payments</button>'}
+      </div>
+    </section>`,
+};
+
+function prettyDob(v) {
+  const m = String(v).replace(/\D/g, '');
+  if (m.length !== 8) return v;
+  const dt = new Date(+m.slice(4), +m.slice(0, 2) - 1, +m.slice(2, 4));
+  return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+/* ---------- Validation ---------- */
+const digits = (s) => String(s || '').replace(/\D/g, '');
+function validate(step) {
+  const d = S.d, e = {};
+  if (step === 'business-type') {
+    if (!d.businessType) e.businessType = 'Select a business type.';
+  }
+  if (step === 'personal') {
+    if (!d.firstName.trim() && !d.lastName.trim()) e.name = 'Enter your first and last name.';
+    else if (!d.firstName.trim()) e.name = 'Enter your first name.';
+    else if (!d.lastName.trim()) e.name = 'Enter your last name.';
+    if (!d.email.trim()) e.email = 'Enter your email address.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email.trim())) e.email = 'Enter a valid email address, like name@example.com.';
+    const dob = digits(d.dob);
+    if (dob.length !== 8) e.dob = 'Enter your date of birth as MM / DD / YYYY.';
+    else {
+      const mm = +dob.slice(0, 2), dd = +dob.slice(2, 4), yy = +dob.slice(4);
+      const dt = new Date(yy, mm - 1, dd);
+      if (dt.getMonth() !== mm - 1 || dt.getDate() !== dd || yy < 1900) e.dob = 'Enter a real date of birth.';
+      else { const age = (Date.now() - dt) / 31557600000; if (age < 18) e.dob = 'You must be at least 18 years old to open a payments account.'; }
+    }
+    if (!d.street.trim()) { e.address = 'Enter a street address.'; e._field = 'street'; }
+    else if (!d.city.trim()) { e.address = 'Enter a city.'; e._field = 'city'; }
+    else if (!d.state) { e.address = 'Select a state.'; e._field = 'state'; }
+    else if (!/^\d{5}$/.test(d.zip.trim())) { e.address = 'Enter a 5-digit zip code.'; e._field = 'zip'; }
+    if (digits(d.phone).length !== 10) e.phone = 'Enter a 10-digit US phone number.';
+  }
+  if (step === 'business') {
+    if (!d.industry) e.industry = 'Select the industry that best matches what you sell.';
+    if (d.website.trim() && !/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(d.website.trim())) e.website = 'Enter a valid website, like www.example.com.';
+    if (d.description.trim().length < 10) e.description = 'Describe what you sell in at least 10 characters.';
+  }
+  if (step === 'payout') {
+    if (d.manual) {
+      if (!d.holder.trim()) e.holder = 'Enter the name on the bank account.';
+      if (!/^\d{9}$/.test(d.routing.trim())) e.routing = 'Routing numbers have 9 digits.';
+      if (!/^\d{4,17}$/.test(d.account.trim())) e.account = 'Account numbers have 4 to 17 digits.';
+      else if (d.account.trim() !== d.account2.trim()) e.account2 = 'The account numbers don’t match.';
+    } else if (!d.bank) e.payout = 'Select your bank, or enter your bank details manually.';
+  }
+  if (step === 'public') {
+    const s = d.descriptor.trim();
+    if (s.length < 5 || s.length > 22) e.descriptor = 'Use 5 to 22 characters.';
+    else if (!/[a-z]/i.test(s)) e.descriptor = 'Include at least one letter.';
+    else if (/[<>\\'"*]/.test(s)) e.descriptor = 'Remove these characters: < > \\ \' " *';
+    if (digits(d.supportPhone).length !== 10) e.supportPhone = 'Enter a 10-digit US phone number.';
+  }
+  return e;
+}
+
+const STEP_FIELDS = {
+  'business-type': ['businessType'],
+  personal: ['firstName', 'lastName', 'email', 'dob', 'street', 'unit', 'city', 'state', 'zip', 'phone'],
+  business: ['industry', 'website', 'description'],
+  payout: ['bank'],
+  public: ['descriptor', 'supportPhone'],
+};
+
+/* ---------- Render ---------- */
+const NAV_TOP = [['nav-enterprise', 'Enterprise'], ['nav-stores', 'Stores']];
+const NAV_STORE = [['nav-home', 'Home'], ['nav-products', 'Products/Items', 1], ['nav-inventory', 'Inventory', 1], ['nav-users', 'User Management', 1], ['nav-customers', 'Customers', 1], ['nav-marketing', 'Marketing', 1], ['nav-integration', 'Integration Hub'], ['nav-order', 'Order Connect', 1], ['nav-reports', 'Reports', 1], ['nav-payments', 'Payments']];
+const mi = ([icon, label, chev], active) => `<button class="mi${active ? ' active' : ''}" ${label === 'Payments' ? 'data-act="nav-payments"' : `data-toast="${label} isn’t part of this prototype. Use Payments."`} title="${label}"${active ? ' aria-current="page"' : ''}>${ic(icon, 20)}<span class="lbl">${label}</span>${chev ? ic('chevron-forward', 20, 20, 'chev') : ''}</button>`;
+
+function shell(content) {
+  return `
+  <div class="shell${S.collapsed ? ' collapsed' : ''}${S.menuOpen ? ' menu-open' : ''}">
+    <header class="topbar">
+      <button class="collapse" data-act="collapse" aria-label="Toggle navigation">${ic('collapsed-menu', 32)}</button>
+      <button class="brand" data-goto="start" aria-label="Linga home">${ic('logo', 100, 40)}</button>
+      <div class="loc">${ic('location-dot', 24)}<button class="loc-select" data-toast="Naples store is the only location in this prototype.">Naples store ${ic('open-locations', 13, 8)}</button></div>
+      <div class="flex-space"></div>
+      <div class="actions">
+        <button class="search" data-toast="Search isn’t part of this prototype.">${ic('magnifying-glass', 24)}<span>Search...</span><span class="kbd">CTRL+Shift+K</span></button>
+        <button class="notif" data-toast="No new notifications." aria-label="Notifications">${ic('notifications', 50, 46)}</button>
+        <button class="sq" data-toast="Settings aren’t part of this prototype." aria-label="Settings">${ic('settings-gear', 24)}</button>
+        <button class="upgrade" data-toast="Upgrade isn’t part of this prototype.">UPGRADE</button>
+        <button class="upload" data-toast="Upload isn’t part of this prototype." aria-label="Upload">${ic('arrow-up-to-line', 24)}</button>
+        <div class="account"><span class="div"></span><span class="avatar">JP</span><span class="name">John P.</span></div>
+      </div>
+    </header>
+    <div class="body-row">
+      <nav class="menu" aria-label="Back office">
+        <div class="menu-group">${NAV_TOP.map((n) => mi(n)).join('')}</div>
+        <div class="menu-store">Naples store</div>
+        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments')).join('')}</div>
+        <div class="menu-sep"><div class="menu-group">${mi(['nav-settings', 'Settings'])}</div></div>
+        <div class="menu-group">${mi(['nav-shop', 'Shop'])}</div>
+      </nav>
+      <main class="main" id="main">${content}</main>
+    </div>
+  </div>`;
+}
+
+const startPage = () => `
+  <div class="start">
+    <div class="start-inner">
+      ${ic('logo', 100, 40)}
+      <div class="start-head">
+        <span class="eyebrow">Linga Payments · clickable prototype</span>
+        <h1>Choose a flow to walk through</h1>
+        <p>Payments are processed under the Linga brand. Every screen is filled with sample data for a restaurant called Naples store, so you can click straight through or change fields to see the error states.</p>
+      </div>
+      <div class="paths">
+        <button class="path" data-goto="payments">
+          <span class="icon-dot">${ic('nav-payments', 24)}</span>
+          <h2>Back-office onboarding</h2>
+          <p>Set up payments from Payments in the Linga back office, from the welcome screen to the confirmation. Leads into Manage when finished.</p>
+          <span class="meta"><span class="pill ready">8 screens</span><span class="go">Start →</span></span>
+        </button>
+        <button class="path" data-goto="freestanding">
+          <span class="icon-dot">${ic('feat-wallet', 24)}</span>
+          <h2>Freestanding onboarding</h2>
+          <p>The same onboarding as a standalone page outside the back office, for merchants who sign up from a link.</p>
+          <span class="meta"><span class="pill pending">Design pending</span><span class="go">Preview →</span></span>
+        </button>
+        <button class="path" data-goto="manage">
+          <span class="icon-dot">${ic('feat-chart', 24)}</span>
+          <h2>Manage payments</h2>
+          <p>Payouts, transactions and account settings that appear in the back office after onboarding.</p>
+          <span class="meta"><span class="pill pending">Design pending</span><span class="go">Preview →</span></span>
+        </button>
+      </div>
+      <p class="start-note">Tip: the Prototype button in the corner restarts the flow, clears a step’s fields and simulates a failed submission.</p>
+    </div>
+  </div>`;
+
+const freestanding = () => `
+  <div class="start"><div class="start-inner" style="max-width:566px;align-items:flex-start">
+    ${ic('logo', 100, 40)}
+    <section class="pending-card" style="background:#fff">
+      <span class="pill pending">Design pending</span>
+      <h1>Freestanding onboarding</h1>
+      <p>This standalone version of onboarding lives outside the back office. It will reuse the same steps as back-office onboarding once its Figma section is shared.</p>
+      <div class="btn-row" style="justify-content:flex-start"><button class="btn-out" data-goto="start">Back to start page</button><button class="btn-txt" data-goto="payments">Open back-office onboarding</button></div>
+    </section>
+  </div></div>`;
+
+function render() {
+  const r = route();
+  if (FLOW.includes(r) || r === 'done' || r === 'payments') document.title = 'Linga Payments Prototype';
+  const app = document.getElementById('app');
+  if (r === 'start') app.innerHTML = startPage();
+  else if (r === 'freestanding') app.innerHTML = freestanding();
+  else app.innerHTML = shell(screens[r]());
+  renderLayer();
+  if (r === 'payout') filterBanks();
+}
+
+function renderLayer() {
+  const layer = document.getElementById('layer');
+  const m = S.modal;
+  let html = '';
+  if (m && m.type === 'leave') {
+    html = `<div class="scrim" data-act="scrim"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="leave-t">
+      <div class="dialog-head"><h2 id="leave-t">Leave this form?</h2><button class="dialog-close" data-act="modal-close">${ic('popup-close', 16)} Close</button></div>
+      <div class="dialog-body">Your progress won’t be saved if you leave now.</div>
+      <div class="dialog-foot"><button class="lg-btn out" data-act="modal-close" id="keep-btn">Keep editing</button><button class="lg-btn fill" data-act="leave">Leave form</button></div>
+    </div></div>`;
+  }
+  if (m && m.type === 'bank') {
+    const b = BANKS.find((x) => x.id === m.bank);
+    const accts = [['Everyday Checking', '1234', '$12,480.22'], ['Business Savings', '8890', '$40,113.09']];
+    const body = m.phase === 'connecting'
+      ? `<div class="connecting"><span class="spinner dark" style="width:28px;height:28px;border-width:3px;margin:0"></span><b style="color:var(--heading)">Connecting to ${esc(b.name)}…</b><span class="secure">This takes a few seconds.</span></div>`
+      : `<div class="connect-body">
+          <img src="${BANKS_DIR}bank-${b.id}.svg" width="88" height="40" alt="${esc(b.name)}">
+          <h3>Choose the account for payouts</h3>
+          ${accts.map(([n, l, bal], i) => `<label class="acct"><input type="radio" name="acct" value="${i}"${i === (m.acct || 0) ? ' checked' : ''}><span class="t"><b>${n}</b><span class="mono">••••${l}</span></span><span>${bal}</span></label>`).join('')}
+          <p class="secure">Linga connects to your bank over an encrypted connection. We never see or store your bank sign-in details.</p>
+          <div class="btns"><button class="btn primary" data-act="bank-connect">Connect account</button><button class="btn secondary" data-act="modal-close">Cancel</button></div>
+        </div>`;
+    html = `<div class="scrim" data-act="scrim"><div class="connect" role="dialog" aria-modal="true" aria-label="Connect ${esc(b.name)}">
+      <div class="connect-head"><span class="brandmini">${ic('logo', 60, 24)} Link your bank</span><button class="xbtn" style="width:32px;height:32px" data-act="modal-close" aria-label="Close">${ic('close', 20)}</button></div>
+      ${body}</div></div>`;
+  }
+  const r = route();
+  const inForm = Object.keys(STEP_FIELDS).includes(r);
+  const panel = S.protoOpen ? `<div class="proto-panel" role="menu">
+      <span class="cap">Prototype</span>
+      <button data-goto="start">Go to start page</button>
+      <button data-act="restart">Restart onboarding with sample data</button>
+      ${inForm ? '<button data-act="clear-step">Clear fields on this step</button>' : ''}
+      <label><input type="checkbox" id="fail-next" ${S.failNext ? 'checked' : ''}> Fail the next submission</label>
+      <span class="cap">Jump to</span>
+      ${['payments', ...FLOW, 'done'].map((s) => `<button data-jump="${s}">${s === 'payments' ? 'Accept payments' : s === 'done' ? 'Confirmation' : LABEL[s]}</button>`).join('')}
+    </div>` : '';
+  html += `<div class="proto">${panel}<button class="proto-toggle" data-act="proto" aria-expanded="${S.protoOpen}">Prototype</button></div>`;
+  if (S.toast) html += `<div class="toast" role="status">${esc(S.toast)}</div>`;
+  layer.innerHTML = html;
+  if (m && m.type === 'leave') document.getElementById('keep-btn')?.focus();
+}
+
+let toastTimer;
+function toast(msg) {
+  S.toast = msg; renderLayer();
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { S.toast = ''; renderLayer(); }, 2800);
+}
+
+function filterBanks() {
+  const q = (document.getElementById('f-banksearch')?.value || '').trim().toLowerCase();
+  let shown = 0;
+  document.querySelectorAll('#bank-grid .bank').forEach((t) => { const on = !q || t.dataset.name.includes(q); t.hidden = !on; if (on) shown++; });
+  const empty = document.getElementById('bank-empty'); if (empty) empty.hidden = shown > 0;
+}
+
+/* ---------- Actions ---------- */
+function next(step) {
+  const errs = validate(step);
+  if (Object.keys(errs).filter((k) => k !== '_field').length) {
+    S.errors = errs; render();
+    const first = document.querySelector('.invalid');
+    (first?.matches('input,select,textarea') ? first : first?.querySelector('input,select,textarea'))?.focus();
+    first?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return;
+  }
+  S.done.add(step);
+  if (S.returnToReview) { S.returnToReview = false; go('review'); return; }
+  go(FLOW[FLOW.indexOf(step) + 1]);
+}
+
+function submit() {
+  S.submitting = true; S.submitError = ''; render();
+  setTimeout(() => {
+    S.submitting = false;
+    if (S.failNext) { S.failNext = false; S.submitError = 'We couldn’t verify the date of birth for John Parker. Check it matches a government ID, then submit again.'; render(); document.querySelector('.banner')?.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    S.done.add('review'); S.completed = true; go('done');
+  }, 1300);
+}
+
+document.addEventListener('click', (ev) => {
+  const t = ev.target.closest('button, [data-act], label');
+  if (!t) { if (S.progressOpen) { S.progressOpen = false; render(); } return; }
+  const act = t.dataset.act;
+
+  if (S.progressOpen && act !== 'progress' && !t.closest('.progress-menu')) { S.progressOpen = false; render(); }
+  if (t.dataset.toast) { toast(t.dataset.toast); return; }
+  if (t.dataset.goto) { go(t.dataset.goto); return; }
+  if (t.dataset.jump) { S.protoOpen = false; go(t.dataset.jump); return; }
+  if (t.dataset.edit) { S.returnToReview = true; go(t.dataset.edit); return; }
+  if (t.dataset.bank) { S.modal = { type: 'bank', bank: t.dataset.bank, phase: 'select', acct: 0 }; renderLayer(); return; }
+
+  switch (act) {
+    case 'scrim': if (ev.target === t) { S.modal = null; renderLayer(); } break;
+    case 'continue': next(route()); break;
+    case 'back': {
+      const i = FLOW.indexOf(route());
+      go(i > 0 ? FLOW[i - 1] : 'payments'); break;
+    }
+    case 'close': S.modal = { type: 'leave' }; renderLayer(); break;
+    case 'modal-close': S.modal = null; renderLayer(); break;
+    case 'leave': S.modal = null; S.d = defaults(); S.done = new Set(); S.returnToReview = false; go('payments'); break;
+    case 'progress': S.progressOpen = !S.progressOpen; render(); break;
+    case 'collapse':
+      if (window.matchMedia('(max-width: 900px)').matches) S.menuOpen = !S.menuOpen; else S.collapsed = !S.collapsed;
+      render(); break;
+    case 'nav-payments': go(S.completed ? 'manage' : 'payments'); break;
+    case 'manual-on': S.d.manual = true; S.errors = {}; render(); document.getElementById('f-holder')?.focus(); break;
+    case 'manual-off': S.d.manual = false; S.errors = {}; render(); break;
+    case 'bank-connect': {
+      const sel = document.querySelector('input[name="acct"]:checked');
+      const i = sel ? +sel.value : 0;
+      const m = S.modal; m.phase = 'connecting'; renderLayer();
+      setTimeout(() => {
+        S.d.bank = m.bank; S.d.manual = false;
+        S.d.bankAcct = i ? 'Business Savings' : 'Everyday Checking'; S.d.bankLast4 = i ? '8890' : '1234';
+        S.modal = null; delete S.errors.payout; render();
+        toast(`${BANKS.find((b) => b.id === m.bank).name} account connected.`);
+      }, 1100);
+      break;
+    }
+    case 'submit': if (!S.submitting) submit(); break;
+    case 'proto': S.protoOpen = !S.protoOpen; renderLayer(); break;
+    case 'restart': S.protoOpen = false; S.d = defaults(); S.done = new Set(); S.completed = false; go('payments'); break;
+    case 'clear-step': {
+      const r = route();
+      (STEP_FIELDS[r] || []).forEach((k) => { S.d[k] = k === 'bank' ? null : ''; });
+      if (r === 'payout') S.d.manual = false;
+      S.protoOpen = false; S.errors = {}; render(); toast('Fields cleared. Press Continue to see the error messages.');
+      break;
+    }
+  }
+});
+
+document.addEventListener('change', (ev) => {
+  if (ev.target.id === 'fail-next') { S.failNext = ev.target.checked; return; }
+  if (ev.target.dataset.k && ev.target.tagName === 'SELECT') setField(ev.target);
+});
+document.addEventListener('input', (ev) => {
+  const el = ev.target;
+  if (el.id === 'f-banksearch') { filterBanks(); return; }
+  if (!el.dataset.k) return;
+  if (el.dataset.fmt === 'phone') {
+    const v = digits(el.value).slice(0, 10);
+    el.value = v.length > 6 ? `(${v.slice(0, 3)}) ${v.slice(3, 6)}-${v.slice(6)}` : v.length > 3 ? `(${v.slice(0, 3)}) ${v.slice(3)}` : v;
+  }
+  if (el.dataset.fmt === 'dob' && ev.inputType !== 'deleteContentBackward') {
+    const v = digits(el.value).slice(0, 8);
+    el.value = [v.slice(0, 2), v.slice(2, 4), v.slice(4)].filter(Boolean).join(' / ');
+  }
+  setField(el);
+  if (el.dataset.k === 'descriptor') { const live = document.getElementById('stmt-live'); if (live) live.textContent = el.value || 'Example'; }
+});
+function setField(el) {
+  S.d[el.dataset.k] = el.value;
+  const e = el.dataset.e;
+  if (e && S.errors[e]) {
+    delete S.errors[e];
+    document.querySelectorAll(`[data-e="${e}"]`).forEach((n) => { n.classList.remove('invalid'); n.removeAttribute('aria-invalid'); n.removeAttribute('aria-describedby'); });
+    document.getElementById('err-' + e)?.remove();
+  }
+}
+document.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Escape') return;
+  if (S.modal && S.modal.phase !== 'connecting') { S.modal = null; renderLayer(); }
+  else if (S.progressOpen) { S.progressOpen = false; render(); }
+  else if (S.protoOpen) { S.protoOpen = false; renderLayer(); }
+});
+
+window.addEventListener('hashchange', () => { S.errors = {}; render(); document.getElementById('main')?.scrollTo(0, 0); window.scrollTo(0, 0); });
+render();
+})();
+</script>
