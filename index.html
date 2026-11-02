@@ -193,6 +193,37 @@ img { display: block; max-width: none; }
 .selected-acct { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; background: #f1f7fa; border: 1px solid #cfe3ec; }
 .selected-acct .t { flex: 1; min-width: 0; }
 
+/* Freestanding page */
+.fs { min-height: 100%; background: #f5f5f5; display: flex; justify-content: center; padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.fs-col { width: 566px; max-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 24px; margin-block: auto; }
+.fs-col > .box { width: 100%; }
+.signed-row { display: flex; align-items: center; gap: 10px; min-height: 36px; flex-wrap: wrap; font-size: 16px; line-height: 20px; }
+.signed { color: var(--placeholder); overflow-wrap: anywhere; }
+.signout { color: var(--action-text); font-weight: 500; font-size: 16px; line-height: 20px; }
+.signout:hover { text-decoration: underline; }
+.acc-wrap { align-self: stretch; display: flex; flex-direction: column; gap: 24px; }
+.tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--border); }
+.tab { flex: 1 1 0; padding: 8px; margin-bottom: -1px; border-bottom: 2px solid transparent; font-weight: 600; font-size: 14px; line-height: 20px; color: var(--body); }
+.tab:hover { color: var(--action-text); }
+.tab.on { color: var(--action-text); border-bottom-color: var(--action); }
+.acc-form { display: flex; flex-direction: column; gap: 16px; padding: 0 24px; }
+.pw { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 6px 0 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--page); }
+.pw:focus-within { border-color: #0196ed; box-shadow: 0 0 0 3px rgba(1, 150, 237, .25); }
+.pw.invalid:focus-within { box-shadow: 0 0 0 3px rgba(222, 31, 31, .2); }
+.pw input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 14px/20px var(--font); color: var(--heading); padding: 0; }
+.eye { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 4px; flex: none; }
+.eye:hover { background: var(--depression); }
+.eye[aria-pressed="true"] svg { opacity: .55; }
+.rules { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.rule { display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 14px; line-height: 17px; color: var(--body); }
+.rule svg { color: #938f8f; flex: none; transition: color .15s; }
+.rule.ok svg { color: var(--success); }
+.rule.bad { color: var(--danger); }
+.rule.bad svg { color: var(--danger); }
+.creating { min-height: 444px; align-items: center; justify-content: center; gap: 24px; }
+.creating p { margin: 0; font-size: 18px; line-height: 22px; color: var(--heading); }
+.ring80 { width: 80px; height: 80px; border-radius: 50%; border: 8px solid #d1e5ec; border-top-color: var(--action); animation: spin 1s linear infinite; }
+
 /* Link popup */
 .lk { width: 396px; max-width: 100%; height: min(704px, calc(100vh - 32px)); background: #fff; border-radius: 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, .28); display: flex; flex-direction: column; overflow: hidden; font-family: var(--font); color: #1d1d1d; }
 .lk-head { position: relative; flex: none; display: flex; justify-content: center; align-items: center; padding: 20px 68px 4px; min-height: 76px; }
@@ -388,18 +419,27 @@ const defaults = () => ({
   descriptor: 'NAPLES STORE', supportPhone: '(239) 555-0100',
 });
 
+const fsDefaults = () => ({ tab: 'create', email: 'john.parker@naplesstore.com', password: 'Naples#2026', show: false, signedIn: false, label: 'Creating account' });
 const S = {
   d: defaults(), errors: {}, done: new Set(), completed: false, returnToReview: false,
   modal: null, progressOpen: false, collapsed: false, menuOpen: false,
   failNext: false, submitting: false, submitError: '', protoOpen: false,
+  doneFs: new Set(), fs: fsDefaults(),
 };
 
 const FLOW = ['business-type', 'personal', 'business', 'payout', 'public', 'review'];
 const LABEL = { 'business-type': 'Business type', personal: 'Personal details', business: 'Business details', payout: 'Payout details', public: 'Public details', review: 'Review and submit' };
-const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'freestanding'];
-
-const route = () => { const h = location.hash.replace('#', ''); return ROUTES.includes(h) ? h : 'start'; };
-const go = (r) => { S.errors = {}; S.progressOpen = false; S.menuOpen = false; S.submitError = ''; if (location.hash === '#' + r) render(); else location.hash = r; };
+const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage'];
+const FS_ROUTES = ['payments', 'account', 'creating', ...FLOW, 'done'];
+const MODE = () => (location.hash.startsWith('#fs-') ? 'fs' : 'bo');
+const route = () => {
+  const h = location.hash.replace('#', '');
+  if (h.startsWith('fs-')) { const b = h.slice(3); return FS_ROUTES.includes(b) ? b : 'payments'; }
+  return ROUTES.includes(h) ? h : 'start';
+};
+const R = (r) => (MODE() === 'fs' && !r.startsWith('fs-') && FS_ROUTES.includes(r) ? 'fs-' + r : r);
+const DONE = () => (MODE() === 'fs' ? S.doneFs : S.done);
+const go = (r) => { r = R(r); S.errors = {}; S.progressOpen = false; S.menuOpen = false; S.submitError = ''; if (location.hash === '#' + r) render(); else location.hash = r; };
 
 /* ---------- Helpers for form fields ---------- */
 const inv = (e, k) => (S.errors[e] && (!S.errors._field || e !== 'address' || S.errors._field === k) ? ' invalid' : '');
@@ -427,7 +467,7 @@ const ring = (pct) => {
 const obHeader = (step, title, desc) => {
   const i = FLOW.indexOf(step);
   const menu = S.progressOpen ? `<div class="progress-menu" role="menu">${FLOW.map((s, j) => {
-    const done = S.done.has(s), cur = s === step, reachable = done || cur || FLOW.slice(0, j).every((p) => S.done.has(p));
+    const done = DONE().has(s), cur = s === step, reachable = done || cur || FLOW.slice(0, j).every((p) => DONE().has(p));
     return `<button role="menuitem" data-goto="${s}" ${reachable ? '' : 'disabled'} class="${cur ? 'cur' : ''}"><span class="step-dot${done && !cur ? ' done' : ''}${cur ? ' cur' : ''}">${done && !cur ? '<svg width="9" height="9" viewBox="0 0 10 10"><path d="M1.5 5.2 4 7.6 8.6 2.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>${LABEL[s]}</button>`;
   }).join('')}</div>` : '';
   return `
@@ -447,7 +487,9 @@ const footer = (primary = 'Continue', back = true) => `
 const legal = `<div class="legal"><button data-toast="Privacy Policy opens on linga.com in the live product.">Privacy Policy</button> and <button data-toast="Terms &amp; Conditions open on linga.com in the live product.">Terms &amp; Conditions</button></div>`;
 const embedded = (inner) => `
   <section class="box" aria-label="Payments onboarding">
-    <div class="close-row"><button class="xbtn" data-act="close" aria-label="Close onboarding">${ic('close', 24)}</button></div>
+    ${MODE() === 'fs'
+      ? `<div class="signed-row"><span class="signed">Signed in as ${esc(S.fs.email)}</span><button class="signout" data-act="signout">Sign out</button></div>`
+      : `<div class="close-row"><button class="xbtn" data-act="close" aria-label="Close onboarding">${ic('close', 24)}</button></div>`}
     ${inner}
     ${legal}
   </section>`;
@@ -474,7 +516,7 @@ const screens = {
         <div class="feature"><div class="icon-dot">${ic('feat-chart', 24)}</div><div><b>Track every sale</b><span>See sales, tips, and refunds in real time, all in one place.</span></div></div>
         <div class="feature"><div class="icon-dot">${ic('feat-bolt', 24)}</div><div><b>Get paid faster</b><span>Money moves to your bank quickly, with no waiting on weekly batches.</span></div></div>
       </div>
-      <button class="btn-big" data-goto="business-type">Get started</button>
+      <button class="btn-big" data-goto="${MODE() === 'fs' ? 'account' : 'business-type'}">Get started</button>
       ${legal}
     </section>`,
 
@@ -773,6 +815,62 @@ function shell(content) {
   </div>`;
 }
 
+/* ---------- Freestanding onboarding ---------- */
+const PW_RULES = [['8-16 characters', (p) => p.length >= 8 && p.length <= 16], ['One uppercase letter', (p) => /[A-Z]/.test(p)], ['One lower case letter', (p) => /[a-z]/.test(p)], ['One number', (p) => /\d/.test(p)], ['One special character', (p) => /[^A-Za-z0-9]/.test(p)]];
+const RULE_ICON = '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M9.99984 18.1873C12.21 18.1873 14.3296 17.3247 15.8924 15.7893C17.4552 14.2539 18.3332 12.1715 18.3332 10.0001C18.3332 7.82876 17.4552 5.74633 15.8924 4.21094C14.3296 2.67556 12.21 1.81299 9.99984 1.81299C7.7897 1.81299 5.67008 2.67556 4.10728 4.21094C2.54448 5.74633 1.6665 7.82876 1.6665 10.0001C1.6665 12.1715 2.54448 14.2539 4.10728 15.7893C5.67008 17.3247 7.7897 18.1873 9.99984 18.1873ZM13.6782 8.49702L9.51156 12.5906C9.20557 12.8912 8.71077 12.8912 8.40804 12.5906L6.32471 10.5438C6.01872 10.2432 6.01872 9.75707 6.32471 9.45964C6.6307 9.16222 7.12549 9.15902 7.42822 9.45964L8.95817 10.9628L12.5715 7.40966C12.8774 7.10904 13.3722 7.10904 13.675 7.40966C13.9777 7.71028 13.981 8.19639 13.675 8.49382L13.6782 8.49702Z"/></svg>';
+const RULE_X = '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.2" fill="currentColor"/><path d="M7.4 7.4l5.2 5.2M12.6 7.4l-5.2 5.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const EYE = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#1D1A1A" d="M11.9983 5.88918C9.73457 5.88918 7.87362 6.91687 6.44666 8.23967C5.10997 9.48262 4.18644 10.9582 3.71426 11.9998C4.18644 13.0413 5.10997 14.5169 6.44319 15.7598C7.87362 17.0827 9.73457 18.1103 11.9983 18.1103C14.262 18.1103 16.1229 17.0827 17.5499 15.7598C18.8866 14.5169 19.8101 13.0413 20.2823 11.9998C19.8101 10.9582 18.8866 9.48262 17.5533 8.23967C16.1229 6.91687 14.262 5.88918 11.9983 5.88918ZM5.31134 7.02102C6.94662 5.50032 9.19295 4.22266 11.9983 4.22266C14.8036 4.22266 17.0499 5.50032 18.6852 7.02102C20.31 8.53131 21.3968 10.3332 21.9141 11.5727C22.0286 11.847 22.0286 12.1525 21.9141 12.4268C21.3968 13.6663 20.31 15.4717 18.6852 16.9785C17.0499 18.4992 14.8036 19.7769 11.9983 19.7769C9.19295 19.7769 6.94662 18.4992 5.31134 16.9785C3.68649 15.4717 2.59977 13.6663 2.08593 12.4268C1.97136 12.1525 1.97136 11.847 2.08593 11.5727C2.59977 10.3332 3.68649 8.52784 5.31134 7.02102ZM11.9983 14.7773C13.5329 14.7773 14.7758 13.5343 14.7758 11.9998C14.7758 10.4652 13.5329 9.22222 11.9983 9.22222C11.974 9.22222 11.9531 9.22222 11.9288 9.22222C11.974 9.39929 11.9983 9.58677 11.9983 9.77773C11.9983 11.0033 11.0018 11.9998 9.77624 11.9998C9.58528 11.9998 9.3978 11.9755 9.22073 11.9303C9.22073 11.9546 9.22073 11.9755 9.22073 11.9998C9.22073 13.5343 10.4637 14.7773 11.9983 14.7773ZM11.9983 7.5557C13.1769 7.5557 14.3073 8.02391 15.1407 8.85733C15.9741 9.69076 16.4423 10.8211 16.4423 11.9998C16.4423 13.1784 15.9741 14.3088 15.1407 15.1422C14.3073 15.9756 13.1769 16.4438 11.9983 16.4438C10.8196 16.4438 9.68926 15.9756 8.85584 15.1422C8.02242 14.3088 7.55421 13.1784 7.55421 11.9998C7.55421 10.8211 8.02242 9.69076 8.85584 8.85733C9.68926 8.02391 10.8196 7.5557 11.9983 7.5557Z"/></svg>';
+const rulesHtml = () => PW_RULES.map(([t, ok]) => { const met = ok(S.fs.password); return `<li class="rule${met ? ' ok' : S.errors.password ? ' bad' : ''}">${!met && S.errors.password ? RULE_X : RULE_ICON}<span>${t}</span><span class="sr" hidden>${met ? 'met' : 'not met'}</span></li>`; }).join('');
+const fsScreens = {
+  account: () => {
+    const f = S.fs, create = f.tab === 'create';
+    return `
+    <section class="box">
+      <div class="close-row"><button class="xbtn" data-goto="payments" aria-label="Close">${ic('close', 24)}</button></div>
+      <h1 class="title-l" style="align-self:stretch">Get started</h1>
+      <div class="acc-wrap">
+        <div class="tabs" role="tablist">
+          <button role="tab" class="tab${create ? ' on' : ''}" aria-selected="${create}" data-act="tab-create">Create account</button>
+          <button role="tab" class="tab${create ? '' : ' on'}" aria-selected="${!create}" data-act="tab-login">Login</button>
+        </div>
+        <div class="acc-form" role="tabpanel">
+          ${S.errors.auth ? `<div class="banner" role="alert"><div>${esc(S.errors.auth)}</div></div>` : ''}
+          <div class="field"><label class="lbl-t" for="fs-email">Email</label>
+            <input id="fs-email" class="in${S.errors.fsEmail ? ' invalid' : ''}" data-fs="email" data-e="fsEmail" type="email" autocomplete="email" placeholder="john@example.com" value="${esc(f.email)}"${S.errors.fsEmail ? ' aria-invalid="true" aria-describedby="err-fsEmail"' : ''}>${errP('fsEmail')}</div>
+          <div class="field"><label class="lbl-t" for="fs-password">Password</label>
+            <div class="pw${S.errors.password ? ' invalid' : ''}" data-e="password"><input id="fs-password" data-fs="password" data-e="password" type="${f.show ? 'text' : 'password'}" autocomplete="${create ? 'new-password' : 'current-password'}" value="${esc(f.password)}"${S.errors.password ? ' aria-invalid="true" aria-describedby="err-password"' : ''}>
+            <button class="eye" data-act="pw-toggle" aria-label="${f.show ? 'Hide' : 'Show'} password" aria-pressed="${f.show}">${EYE}</button></div>${errP('password')}</div>
+          ${create ? `<ul class="rules" id="pw-rules" aria-label="Password requirements">${rulesHtml()}</ul>` : ''}
+          <button class="btn-big" data-act="${create ? 'fs-create' : 'fs-login'}">${create ? 'Create account' : 'Login'}</button>
+        </div>
+      </div>
+      ${legal}
+    </section>`;
+  },
+  creating: () => `
+    <section class="box creating" aria-live="polite">
+      <span class="ring80" aria-hidden="true"></span>
+      <p>${esc(S.fs.label)}</p>
+    </section>`,
+};
+const fsPage = (content) => `<div class="fs"><div class="fs-col">${ic('logo', 140, 56)}${content}</div></div>`;
+
+function fsAuth(kind) {
+  const f = S.fs, e = {};
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.fsEmail = 'Enter a valid email address, like name@example.com.';
+  if (kind === 'create' && !PW_RULES.every(([, ok]) => ok(f.password))) e.password = 'Your password needs to meet all the requirements below.';
+  if (kind === 'login' && !f.password) e.password = 'Enter your password.';
+  if (!Object.keys(e).length && S.failNext) {
+    S.failNext = false;
+    if (kind === 'create') e.fsEmail = 'An account with this email already exists. Log in instead.';
+    else e.auth = 'That email and password don’t match. Try again, or create an account.';
+  }
+  if (Object.keys(e).length) { S.errors = e; render(); document.querySelector('.invalid input, input.invalid')?.focus(); return; }
+  f.label = kind === 'create' ? 'Creating account' : 'Signing in';
+  go('creating');
+  setTimeout(() => { if (route() === 'creating' && MODE() === 'fs') { f.signedIn = true; go('business-type'); } }, 1800);
+}
+
 const startPage = () => `
   <div class="start">
     <div class="start-inner">
@@ -789,11 +887,11 @@ const startPage = () => `
           <p>Set up payments from Payments in the Linga back office, from the welcome screen to the confirmation. Leads into Manage when finished.</p>
           <span class="meta"><span class="pill ready">8 screens</span><span class="go">Start →</span></span>
         </button>
-        <button class="path" data-goto="freestanding">
+        <button class="path" data-goto="fs-payments">
           <span class="icon-dot">${ic('feat-wallet', 24)}</span>
           <h2>Freestanding onboarding</h2>
-          <p>The same onboarding as a standalone page outside the back office, for merchants who sign up from a link.</p>
-          <span class="meta"><span class="pill pending">Design pending</span><span class="go">Preview →</span></span>
+          <p>The same onboarding on a standalone Linga page outside the back office. Merchants create an account or log in first.</p>
+          <span class="meta"><span class="pill ready">11 screens</span><span class="go">Start →</span></span>
         </button>
         <button class="path" data-goto="manage">
           <span class="icon-dot">${ic('feat-chart', 24)}</span>
@@ -806,23 +904,12 @@ const startPage = () => `
     </div>
   </div>`;
 
-const freestanding = () => `
-  <div class="start"><div class="start-inner" style="max-width:566px;align-items:flex-start">
-    ${ic('logo', 100, 40)}
-    <section class="pending-card" style="background:#fff">
-      <span class="pill pending">Design pending</span>
-      <h1>Freestanding onboarding</h1>
-      <p>This standalone version of onboarding lives outside the back office. It will reuse the same steps as back-office onboarding once its Figma section is shared.</p>
-      <div class="btn-row" style="justify-content:flex-start"><button class="btn-out" data-goto="start">Back to start page</button><button class="btn-txt" data-goto="payments">Open back-office onboarding</button></div>
-    </section>
-  </div></div>`;
-
 function render() {
   const r = route();
   if (FLOW.includes(r) || r === 'done' || r === 'payments') document.title = 'Linga Payments Prototype';
   const app = document.getElementById('app');
-  if (r === 'start') app.innerHTML = startPage();
-  else if (r === 'freestanding') app.innerHTML = freestanding();
+  if (MODE() === 'fs') app.innerHTML = fsPage((fsScreens[r] || screens[r])());
+  else if (r === 'start') app.innerHTML = startPage();
   else app.innerHTML = shell(screens[r]());
   renderLayer();
   if (r === 'payout') filterBanks();
@@ -834,7 +921,7 @@ function renderLayer() {
   let html = '';
   if (m && m.type === 'leave') {
     html = `<div class="scrim" data-act="scrim"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="leave-t">
-      <div class="dialog-head"><h2 id="leave-t">Leave this form?</h2><button class="dialog-close" data-act="modal-close">${ic('popup-close', 16)} Close</button></div>
+      <div class="dialog-head"><h2 id="leave-t">${m.title || 'Leave this form?'}</h2><button class="dialog-close" data-act="modal-close">${ic('popup-close', 16)} Close</button></div>
       <div class="dialog-body">Your progress won’t be saved if you leave now.</div>
       <div class="dialog-foot"><button class="lg-btn out" data-act="modal-close" id="keep-btn">Keep editing</button><button class="lg-btn fill" data-act="leave">Leave form</button></div>
     </div></div>`;
@@ -901,7 +988,7 @@ function renderLayer() {
       ${inForm ? '<button data-act="clear-step">Clear fields on this step</button>' : ''}
       <label><input type="checkbox" id="fail-next" ${S.failNext ? 'checked' : ''}> Fail the next submission</label>
       <span class="cap">Jump to</span>
-      ${['payments', ...FLOW, 'done'].map((s) => `<button data-jump="${s}">${s === 'payments' ? 'Accept payments' : s === 'done' ? 'Confirmation' : LABEL[s]}</button>`).join('')}
+      ${(MODE() === 'fs' ? ['payments', 'account', ...FLOW, 'done'] : ['payments', ...FLOW, 'done']).map((s) => `<button data-jump="${s}">${s === 'payments' ? 'Accept payments' : s === 'done' ? 'Confirmation' : s === 'account' ? 'Create account / Login' : LABEL[s]}</button>`).join('')}
     </div>` : '';
   html += `<div class="proto">${panel}<button class="proto-toggle" data-act="proto" aria-expanded="${S.protoOpen}">Prototype</button></div>`;
   if (S.toast) html += `<div class="toast" role="status">${esc(S.toast)}</div>`;
@@ -934,7 +1021,7 @@ function next(step) {
     first?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     return;
   }
-  S.done.add(step);
+  DONE().add(step);
   if (S.returnToReview) { S.returnToReview = false; go('review'); return; }
   go(FLOW[FLOW.indexOf(step) + 1]);
 }
@@ -944,7 +1031,7 @@ function submit() {
   setTimeout(() => {
     S.submitting = false;
     if (S.failNext) { S.failNext = false; S.submitError = 'We couldn’t verify the date of birth for John Parker. Check it matches a government ID, then submit again.'; render(); document.querySelector('.banner')?.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
-    S.done.add('review'); S.completed = true; go('done');
+    DONE().add('review'); S.completed = true; go('done');
   }, 1300);
 }
 
@@ -970,7 +1057,16 @@ document.addEventListener('click', (ev) => {
     }
     case 'close': S.modal = { type: 'leave' }; renderLayer(); break;
     case 'modal-close': S.modal = null; renderLayer(); break;
-    case 'leave': S.modal = null; S.d = defaults(); S.done = new Set(); S.returnToReview = false; go('payments'); break;
+    case 'leave':
+      S.modal = null; S.d = defaults(); S.returnToReview = false;
+      if (MODE() === 'fs') { S.doneFs = new Set(); S.fs = fsDefaults(); go('payments'); toast('You’re signed out.'); }
+      else { S.done = new Set(); go('payments'); }
+      break;
+    case 'signout': S.modal = { type: 'leave', title: 'Sign out?' }; renderLayer(); break;
+    case 'tab-create': case 'tab-login': S.fs.tab = act === 'tab-create' ? 'create' : 'login'; S.errors = {}; render(); document.querySelector('.tab.on')?.focus(); break;
+    case 'pw-toggle': S.fs.show = !S.fs.show; render(); document.getElementById('fs-password')?.focus(); break;
+    case 'fs-create': fsAuth('create'); break;
+    case 'fs-login': fsAuth('login'); break;
     case 'progress': S.progressOpen = !S.progressOpen; render(); break;
     case 'collapse':
       if (window.matchMedia('(max-width: 900px)').matches) S.menuOpen = !S.menuOpen; else S.collapsed = !S.collapsed;
@@ -1005,7 +1101,7 @@ document.addEventListener('click', (ev) => {
     case 'bank-reset': S.d.bank = null; S.d.linked = []; S.d.payoutAcct = 0; render(); break;
     case 'submit': if (!S.submitting) submit(); break;
     case 'proto': S.protoOpen = !S.protoOpen; renderLayer(); break;
-    case 'restart': S.protoOpen = false; S.d = defaults(); S.done = new Set(); S.completed = false; go('payments'); break;
+    case 'restart': S.protoOpen = false; S.d = defaults(); S.done = new Set(); S.doneFs = new Set(); S.fs = fsDefaults(); S.completed = false; go('payments'); break;
     case 'clear-step': {
       const r = route();
       (STEP_FIELDS[r] || []).forEach((k) => { S.d[k] = k === 'bank' ? null : ''; });
@@ -1024,6 +1120,17 @@ document.addEventListener('change', (ev) => {
 document.addEventListener('input', (ev) => {
   const el = ev.target;
   if (el.id === 'f-banksearch') { filterBanks(); return; }
+  if (el.dataset.fs) {
+    S.fs[el.dataset.fs] = el.value;
+    const e = el.dataset.e;
+    if (S.errors[e] || S.errors.auth) {
+      delete S.errors[e]; delete S.errors.auth;
+      document.querySelectorAll(`[data-e="${e}"]`).forEach((n) => { n.classList.remove('invalid'); n.removeAttribute('aria-invalid'); });
+      document.getElementById('err-' + e)?.remove(); document.querySelector('.acc-form .banner')?.remove();
+    }
+    if (el.dataset.fs === 'password') { const ul = document.getElementById('pw-rules'); if (ul) ul.innerHTML = rulesHtml(); }
+    return;
+  }
   if (!el.dataset.k && !el.dataset.lk) return;
   if (el.dataset.fmt === 'phone') {
     const v = digits(el.value).slice(0, 10);

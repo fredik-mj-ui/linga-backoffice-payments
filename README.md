@@ -8,7 +8,7 @@ Built from the Figma file "Stripe payments integration", section **Back Office O
 | Flow | Status | Start at |
 | --- | --- | --- |
 | Back-office onboarding | Built: 8 screens + leave-form dialog | `index.html#payments` |
-| Freestanding onboarding | Placeholder, waiting for Figma section | `index.html#freestanding` |
+| Freestanding onboarding | Built: 11 screens + sign-out dialog | `index.html#fs-payments` |
 | Manage payments | Placeholder, waiting for Figma section | `index.html#manage` |
 
 `index.html` (no hash) opens the start page with all three flows.
@@ -22,6 +22,15 @@ Built from the Figma file "Stripe payments integration", section **Back Office O
 - Payout: search banks, pick a bank to run a simulated "Link your bank" step, or enter routing/account numbers manually.
 - Review: each **Edit** returns you to the step, and **Continue** brings you back to the review.
 - The **Prototype** button (bottom right) restarts the flow, clears the current step, jumps to any screen, and can make the next submission fail.
+
+### Freestanding onboarding
+
+Accept payments → Get started (Create account / Login tabs) → Creating account → the same six steps as the back office → Confirmation, on a standalone Linga page.
+
+- Sample account: `john.parker@naplesstore.com` / `Naples#2026`. The password rules turn green as they're met.
+- The eye button shows or hides the password.
+- After signing in, each step shows "Signed in as …" with **Sign out**, which opens the "Sign out?" dialog.
+- With **Fail the next submission** on, Create account says the email is taken and Login says the password doesn't match.
 
 ## Run locally
 
