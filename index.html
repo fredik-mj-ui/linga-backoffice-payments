@@ -349,6 +349,24 @@ img { display: block; max-width: none; }
 .switch:checked::after { transform: translateX(18px); }
 .switch:disabled { opacity: .6; cursor: not-allowed; }
 .switch:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.scrim.dr { z-index: 45; display: block; padding: 0; }
+.drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 562px; max-width: 100%; background: #fff; display: flex; flex-direction: column; box-shadow: -8px 0 24px rgba(0, 0, 0, .12); padding-top: env(safe-area-inset-top, 0px); }
+.dr-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 17px 24px 23px; }
+.dr-h h2 { margin: 0; font-weight: 400; font-size: 24px; line-height: 28px; color: var(--heading); }
+.dr-b { flex: 1; overflow-y: auto; padding: 20px 20px 20px 24px; display: flex; flex-direction: column; gap: 12px; }
+.dr-card { border: 1px solid var(--border); border-radius: 4px; padding: 20px; }
+.dr-card h3 { margin: 0 0 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 16px; line-height: 20px; color: var(--heading); }
+.dr-row { display: flex; gap: 16px; align-items: center; }
+.dr-row > div { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.dr-row b { font-weight: 600; font-size: 16px; line-height: 20px; color: var(--heading); }
+.dr-row p { margin: 0; font-size: 14px; line-height: 20px; color: var(--body); }
+.rn { border: 1px solid var(--border); border-radius: 4px; }
+.rn-h { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; padding: 0 20px; text-transform: uppercase; font-size: 16px; letter-spacing: .3px; color: var(--heading); text-align: left; }
+.rn-h:hover { background: #f7f9fd; }
+.rn-h img.down { transform: rotate(90deg); }
+.rn ul { margin: 0; padding: 0 20px 16px 40px; color: var(--body); display: flex; flex-direction: column; gap: 6px; }
+.dr-f { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 20px calc(11px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--border); }
+.btn.big { padding: 9px 16px; border-radius: 8px; }
 /* Manage modals */
 .scrim.mg { place-items: start center; overflow-y: auto; padding-block: 40px; }
 .mdl { width: 496px; max-width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, .14), 0 2px 6px rgba(0, 0, 0, .08); }
@@ -616,6 +634,7 @@ img.rot { transform: rotate(-90deg); }
 /* Toast + prototype controls */
 .toast { position: fixed; z-index: 70; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: #1d1a1a; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
 .proto { position: fixed; z-index: 60; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.proto.up { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
 .proto-toggle { padding: 8px 12px; border-radius: 999px; background: #1d1a1a; color: #fff; font-size: 12px; font-weight: 600; letter-spacing: .04em; box-shadow: 0 4px 14px rgba(0, 0, 0, .2); }
 .proto-panel { width: 260px; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, .15); padding: 8px; display: flex; flex-direction: column; gap: 2px; }
 .proto-panel button, .proto-panel label { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; text-align: left; font-size: 13px; color: var(--heading); cursor: pointer; }
@@ -680,7 +699,7 @@ const defaults = () => ({
 
 const fsDefaults = () => ({ tab: 'create', email: 'john.parker@naplesstore.com', password: 'Naples#2026', show: false, signedIn: false, label: 'Creating account' });
 const S = {
-  paySub: true,
+  paySub: true, drawer: false, notifRead: false, riskDone: false, rnOpen: {},
   d: defaults(), errors: {}, done: new Set(), completed: false, returnToReview: false,
   modal: null, progressOpen: false, collapsed: false, menuOpen: false,
   failNext: false, submitting: false, submitError: '', protoOpen: false,
@@ -1276,6 +1295,23 @@ const AC_EDIT = {
   taxaddr: ['Tax address', [['street', 'Street address'], ['city', 'City'], ['state', 'State'], ['zip', 'Zip code']]],
 };
 const AC_MODALS = {};
+const RELEASES = [['oct', 'October release notes', ['Instant payouts now work on weekends and holidays.', 'Export tax transactions from Payments › Account › Tax.', 'Dispute evidence uploads are faster and accept files up to 4.5 MB.']],
+  ['sep', 'September release notes', ['Tap to pay on Linga POS terminals and phones.', 'New Payout reconciliation report in Payments › Reports.', 'Apple Pay and Google Pay on Linga online ordering.']],
+  ['aug', 'August release notes', ['Linga Payments is available for all US locations.', 'Statement descriptor preview during onboarding.', 'Refunds now show in each payment’s timeline.']]];
+function drawerHtml() {
+  return `<div class="scrim dr" data-act="drawer-close"><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-t">
+    <div class="dr-h"><h2 id="dr-t">Announcement Center</h2><button class="dialog-close" data-act="drawer-close" id="dr-x">${ic('popup-close', 16)} Close</button></div>
+    <div class="dr-b">
+      ${S.riskDone ? '' : `<section class="dr-card"><h3>Action required</h3><div class="dr-row"><div><span class="pill warn">Due in 3 days</span><b>Update your business information</b><p>We're missing valid information about your business. Provide some additional valid business information to continue processing payments and payouts.</p></div><button class="btn primary auto" data-act="risk-open">Update</button></div></section>`}
+      ${RELEASES.map(([k, t, items]) => `<section class="rn"><button class="rn-h" data-act="rn-toggle" data-k="${k}" aria-expanded="${!!S.rnOpen[k]}"><span>${t}</span>${ic('chevron-forward', 20, 20, S.rnOpen[k] ? 'down' : '')}</button>${S.rnOpen[k] ? `<ul>${items.map((x) => `<li>${x}</li>`).join('')}</ul>` : ''}</section>`).join('')}
+    </div>
+    <div class="dr-f"><button class="btn-out" data-act="drawer-close">Cancel</button><button class="btn primary auto big" data-act="notif-mark">${S.notifRead ? 'Mark as unread' : 'Mark as read'}</button></div>
+  </aside></div>`;
+}
+AC_MODALS.risk = (m) => mdl('<h2 class="mdl-t" id="mdl-t">Information needed for your payments account</h2><p class="mdl-p">To ensure your business is supportable under our Terms of Service, we\'ll need you to provide the information requested below, that we couldn\'t verify using your website and account details.</p>',
+  `${banner(m.fail)}<div class="field"><label class="lbl-t" for="m-sell">What products or services do you plan to sell?</label><textarea id="m-sell" class="ta${m.err.sell ? ' invalid' : ''}" data-m="sell">${esc(m.sell)}</textarea>${mErr('sell')}</div>
+   <div class="field"><span class="lbl-t">Who is your target audience?</span>${mRadios('aud', ['I\'m planning to sell to individual end customers', 'I\'m planning to sell to other businesses', 'Other'])}</div>
+   <div class="btns"><button class="btn primary" data-act="risk-submit"${m.busy ? ' aria-busy="true" disabled' : ''}>${m.busy ? spin('Submitting…') : 'Submit'}</button></div>`);
 AC_MODALS.acedit = (m) => {
   if (m.sec === 'taxcode') return mdl('<h2 class="mdl-t" id="mdl-t">Product tax code</h2><p class="mdl-p">The default code Linga Tax uses for items that don’t have their own.</p>',
     `${mRadios('code', TAX_CODES.map((c) => [c[0], c[1], c[2]]))}<div class="btns"><button class="btn primary" data-act="ac-save">Save</button><button class="btn secondary" data-act="modal-close">Cancel</button></div>`);
@@ -1300,6 +1336,24 @@ AC_MODALS.acreg = (m) => mdl('<h2 class="mdl-t" id="mdl-t">Add registration</h2>
 function acAction(act, t) {
   const g = S.mg, a = g?.ac, m = S.modal, d = S.d;
   switch (act) {
+    case 'notif-open': S.drawer = true; S.notifRead = true; render(); document.getElementById('dr-x')?.focus(); return true;
+    case 'drawer-close': if (t.classList.contains('scrim') && t !== event.target) return true; S.drawer = false; render(); document.querySelector('.notif')?.focus(); return true;
+    case 'rn-toggle': S.rnOpen[t.dataset.k] = !S.rnOpen[t.dataset.k]; renderLayer(); document.querySelector(`[data-k="${t.dataset.k}"]`)?.focus(); return true;
+    case 'notif-mark': S.notifRead = !S.notifRead; render(); toast(S.notifRead ? 'Notifications marked as read.' : 'Notifications marked as unread.'); return true;
+    case 'risk-open': openModal('risk', { sell: S.d.description, aud: 'I\'m planning to sell to individual end customers' }); return true;
+    case 'risk-submit': {
+      m.err = {}; m.fail = '';
+      if ((m.sell || '').trim().length < 10) m.err.sell = 'Describe what you sell in at least 10 characters.';
+      if (!m.aud) m.err.aud = 'Choose your target audience.';
+      if (Object.keys(m.err).length) { renderLayer(); document.querySelector('.mdl .invalid, .mdl .radios.bad input')?.focus(); return true; }
+      m.busy = true; renderLayer();
+      setTimeout(() => {
+        m.busy = false;
+        if (S.failNext) { S.failNext = false; m.fail = 'We couldn’t save your answers. Check your connection and submit again.'; renderLayer(); return; }
+        S.riskDone = true; S.modal = null; render(); toast('Thanks. We’ll review your information within 2 business days.');
+      }, 1000);
+      return true;
+    }
     case 'ac-tab': a.tab = t.dataset.tab; g.pop = null; render(); document.querySelector('.rtab.on')?.focus(); return true;
     case 'ac-pop': g.pop = g.pop === t.dataset.k ? null : t.dataset.k; render(); document.querySelector('.fpop .fopt')?.focus(); return true;
     case 'ac-edit': {
@@ -1664,7 +1718,7 @@ function shell(content) {
       <div class="flex-space"></div>
       <div class="actions">
         <button class="search" data-toast="Search isn’t part of this prototype.">${ic('magnifying-glass', 24)}<span>Search...</span><span class="kbd">CTRL+Shift+K</span></button>
-        <button class="notif" data-toast="No new notifications." aria-label="Notifications">${ic('notifications', 50, 46)}</button>
+        ${isManage() ? `<button class="notif" data-act="notif-open" aria-haspopup="dialog" aria-expanded="${!!S.drawer}" aria-label="Notifications${S.notifRead ? '' : ', 1 unread'}">${ic(S.notifRead ? 'notifications-read' : 'notifications', 50, 46)}</button>` : `<button class="notif" data-toast="No new notifications." aria-label="Notifications">${ic('notifications', 50, 46)}</button>`}
         <button class="sq" data-toast="Settings aren’t part of this prototype." aria-label="Settings">${ic('settings-gear', 24)}</button>
         <button class="upgrade" data-toast="Upgrade isn’t part of this prototype.">UPGRADE</button>
         <button class="upload" data-toast="Upload isn’t part of this prototype." aria-label="Upload">${ic('arrow-up-to-line', 24)}</button>
@@ -1796,7 +1850,8 @@ function renderLayer() {
       <div class="dialog-foot"><button class="lg-btn out" data-act="modal-close" id="keep-btn">Keep editing</button><button class="lg-btn fill" data-act="leave">Leave form</button></div>
     </div></div>`;
   }
-  if (m && (mgModals[m.type] || AC_MODALS[m.type])) html = (mgModals[m.type] || AC_MODALS[m.type])(m);
+  if (S.drawer && isManage()) html += drawerHtml();
+  if (m && (mgModals[m.type] || AC_MODALS[m.type])) html += (mgModals[m.type] || AC_MODALS[m.type])(m);
   if (m && m.type === 'link') {
     const b = BANKS.find((x) => x.id === m.bank);
     let inner = '';
@@ -1861,7 +1916,7 @@ function renderLayer() {
       <span class="cap">Jump to</span>
       ${(MODE() === 'fs' ? ['payments', 'account', ...FLOW, 'done'] : ['payments', ...FLOW, 'done']).map((s) => `<button data-jump="${s}">${s === 'payments' ? 'Accept payments' : s === 'done' ? 'Confirmation' : s === 'account' ? 'Create account / Login' : LABEL[s]}</button>`).join('')}
     </div>` : '';
-  html += `<div class="proto">${panel}<button class="proto-toggle" data-act="proto" aria-expanded="${S.protoOpen}">Prototype</button></div>`;
+  html += `<div class="proto${S.drawer && isManage() ? ' up' : ''}">${panel}<button class="proto-toggle" data-act="proto" aria-expanded="${S.protoOpen}">Prototype</button></div>`;
   if (S.toast) html += `<div class="toast" role="status">${esc(S.toast)}</div>`;
   layer.innerHTML = html;
   if (m && m.type === 'leave') document.getElementById('keep-btn')?.focus();
@@ -2054,11 +2109,12 @@ document.addEventListener('keydown', (ev) => {
   if (ev.key !== 'Escape') return;
   if (S.modal && !S.modal.busy && !['loading', 'saving'].includes(S.modal.phase)) { S.modal = null; renderLayer(); }
   else if (S.mg?.pop) { S.mg.pop = null; render(); }
+  else if (S.drawer) { S.drawer = false; render(); document.querySelector('.notif')?.focus(); }
   else if (S.progressOpen) { S.progressOpen = false; render(); }
   else if (S.protoOpen) { S.protoOpen = false; renderLayer(); }
 });
 
-window.addEventListener('hashchange', () => { S.errors = {}; render(); document.getElementById('main')?.scrollTo(0, 0); window.scrollTo(0, 0); });
+window.addEventListener('hashchange', () => { S.errors = {}; S.drawer = false; render(); document.getElementById('main')?.scrollTo(0, 0); window.scrollTo(0, 0); });
 render();
 })();
 </script>

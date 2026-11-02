@@ -60,6 +60,10 @@ Payments › Account with three tabs:
 
 The Payments item in the menu expands and collapses its sub-menu once onboarding is done; opening any Manage page counts as onboarding done.
 
+### Announcement Center
+
+On any Manage page the bell opens the Announcement Center drawer: an Action required card ("Update your business information") whose Update button opens the "Information needed for your payments account" form, plus October, September and August release notes that expand. Opening the drawer clears the unread dot; Mark as unread brings it back.
+
 ## Run locally
 
 The page loads its icons from `assets/`, so serve the folder rather than opening the file directly:
