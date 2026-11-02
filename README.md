@@ -9,7 +9,7 @@ Built from the Figma file "Stripe payments integration", section **Back Office O
 | --- | --- | --- |
 | Back-office onboarding | Built: 8 screens + leave-form dialog | `index.html#payments` |
 | Freestanding onboarding | Built: 11 screens + sign-out dialog | `index.html#fs-payments` |
-| Manage payments | Placeholder, waiting for Figma section | `index.html#manage` |
+| Manage · Transactions | Built: page + 11 popups | `index.html#manage` |
 
 `index.html` (no hash) opens the start page with all three flows.
 
@@ -31,6 +31,17 @@ Accept payments → Get started (Create account / Login tabs) → Creating accou
 - The eye button shows or hides the password.
 - After signing in, each step shows "Signed in as …" with **Sign out**, which opens the "Sign out?" dialog.
 - With **Fail the next submission** on, Create account says the email is taken and Login says the password doesn't match.
+
+### Manage · Transactions
+
+Payments › Transactions in the back office (opens after onboarding, or from the start page).
+
+- **Balance:** Pay out (Instant / Standard, amount checks, 2% instant fee, confirmation) and See details (Your balance). Paying out updates the balance on the page.
+- **Recent transactions:** All and Disputes tabs, a working Status filter (plus Payment method / Reason), pagination, and Export (date ranges, custom dates, column sets).
+- **Payment details:** fee breakdown, payment method, timeline, and Begin refund → Send refund (amount checks). Refunds update the status and timeline.
+- **Disputed payment:** dispute card with step-by-step guide, Accept dispute (confirm), and Counter dispute: 3 prefilled steps (reason, customer details, evidence upload) plus a review step.
+- **Fail the next submission** (Prototype menu) makes the next payout, refund or evidence submission fail.
+- Payouts, Statements and Account in the menu are placeholders for the next designs.
 
 ## Run locally
 
