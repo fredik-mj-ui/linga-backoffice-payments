@@ -304,14 +304,24 @@ img.rot { transform: rotate(-90deg); }
 .spds { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .spd { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; }
 .spd.on { border-color: var(--action); box-shadow: inset 0 0 0 1px var(--action); }
-.spd input, .radio input { accent-color: var(--action); width: 16px; height: 16px; margin: 2px 0 0; flex: none; }
+.spd input, .radio input { width: 16px; height: 16px; margin: 2px 0 0; flex: none; }
+/* Custom radios and checkboxes: the browser's own controls turn dark in dark mode */
+.spd input[type=radio], .radio input[type=radio], .acct input[type=radio] { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; margin: 2px 0 0; flex: none; border: 1px solid #c4c4c4; border-radius: 50%; background: #fff; box-shadow: 0 1px 1px rgba(0, 0, 0, .06); cursor: pointer; display: grid; place-items: center; transition: border-color .12s, background .12s; }
+.spd input[type=radio]:hover, .radio input[type=radio]:hover, .acct input[type=radio]:hover { border-color: #938f8f; }
+.spd input[type=radio]:checked, .radio input[type=radio]:checked, .acct input[type=radio]:checked { border-color: var(--action); background: var(--action); }
+.spd input[type=radio]:checked::after, .radio input[type=radio]:checked::after, .acct input[type=radio]:checked::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+.spd input[type=radio]:focus-visible, .radio input[type=radio]:focus-visible, .acct input[type=radio]:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.radios.bad .radio input[type=radio] { outline: 0; border-color: var(--danger); }
+.fopt input[type=checkbox] { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; margin: 0; flex: none; border: 1px solid #c4c4c4; border-radius: 4px; background: #fff; display: grid; place-items: center; cursor: pointer; }
+.fopt input[type=checkbox]:checked { border-color: var(--action); background: var(--action); }
+.fopt input[type=checkbox]:checked::after { content: ""; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
 .spd b { display: block; font-weight: 600; color: var(--heading); }
 .spd small { display: block; font-size: 14px; line-height: 20px; color: var(--body); }
 .radios { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
 .radio { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
 .radio b { display: block; font-weight: 600; color: var(--heading); }
 .radio small { display: block; font-size: 12px; line-height: 16px; color: var(--body); }
-.radios.bad .radio input { outline: 1px solid var(--danger); border-radius: 50%; }
+
 .daterow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 8px; }
 .btn-row-l { display: flex; gap: 8px; flex-wrap: wrap; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
