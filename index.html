@@ -702,7 +702,7 @@ const route = () => {
 };
 const R = (r) => (MODE() === 'fs' && !r.startsWith('fs-') && FS_ROUTES.includes(r) ? 'fs-' + r : r);
 const DONE = () => (MODE() === 'fs' ? S.doneFs : S.done);
-const go = (r) => { r = R(r); S.errors = {}; S.progressOpen = false; S.menuOpen = false; S.submitError = ''; if (location.hash === '#' + r) render(); else location.hash = r; };
+const go = (r) => { r = r.startsWith('bo:') ? r.slice(3) : R(r); S.errors = {}; S.progressOpen = false; S.menuOpen = false; S.submitError = ''; if (location.hash === '#' + r) render(); else location.hash = r; };
 
 /* ---------- Helpers for form fields ---------- */
 const inv = (e, k) => (S.errors[e] && (!S.errors._field || e !== 'address' || S.errors._field === k) ? ' invalid' : '');
@@ -951,8 +951,8 @@ const screens = {
         <h1 class="title-l">You’re ready to take payments</h1>
         <p class="body-m">Your processing account is active.</p>
         <div class="btn-row" style="padding-top:4px">
-          <button class="btn-sec" data-goto="manage">View payouts</button>
-          <button class="btn-sec" data-goto="manage">Manage account</button>
+          <button class="btn-sec" data-goto="bo:payouts">View payouts</button>
+          <button class="btn-sec" data-goto="bo:account">Manage account</button>
         </div>
       </div>
     </section>
