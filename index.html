@@ -298,6 +298,57 @@ img { display: block; max-width: none; }
 .rtbl .lt { font-weight: 400; }
 .rtbl tr.tot td { padding-top: 13px; }
 .rtbl tr.tot td.r { background: linear-gradient(var(--heading), var(--heading)) top right / 100px 1px no-repeat; }
+.mi .chev.open { transform: rotate(90deg); }
+.mi .chev { transition: transform .15s; }
+.pbox.ac { padding: 20px; gap: 20px; }
+.ac-h { display: flex; align-items: flex-start; gap: 16px; justify-content: space-between; flex-wrap: wrap; }
+.ac-h h2 { margin: 0 0 8px; font-weight: 700; font-size: 20px; line-height: 24px; color: #000; }
+.ac-h p { margin: 0; font-size: 16px; line-height: 20px; color: #000; }
+.ac-cards { display: flex; flex-direction: column; gap: 24px; padding: 0 4px; }
+.ac-cards .rrow .k { width: 187px; }
+.pm-groups { display: flex; flex-direction: column; gap: 24px; padding: 0 8px; }
+.pm-g h3 { margin: 0 0 6px; font-weight: 600; font-size: 20px; line-height: 26px; color: var(--heading); }
+.pm-g p { margin: 0 0 12px; color: var(--body); }
+.pm-g ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.pm-g li { border-bottom: 1px solid var(--border); }
+.pm-g li button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 8px 8px 8px; text-align: left; }
+.pm-g li button:hover { background: #f7f9fd; }
+.pm-tile { width: 32px; height: 32px; border-radius: 4px; display: grid; place-items: center; font: 700 11px/1 var(--font); flex: none; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08); }
+.pm-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pm-t b { font-weight: 600; color: var(--heading); display: flex; align-items: center; gap: 8px; }
+.pm-t small { font-size: 14px; line-height: 20px; color: var(--body); }
+.pm-note { font-size: 12px; color: var(--body); }
+.fpop.right { left: auto; right: 0; min-width: 200px; }
+.fpop button.fopt { width: 100%; text-align: left; }
+.tbl td.muted { color: var(--heading); }
+.tbl td.r.muted { padding-right: 24px; }
+.tbl.docs td:last-child { width: 1%; }
+.flag svg { width: 18px; height: 12px; vertical-align: -1px; margin-right: 6px; }
+.flag-ca { display: inline-block; width: 18px; height: 12px; margin-right: 6px; vertical-align: -1px; background: linear-gradient(90deg, #d52b1e 26%, #fff 26% 74%, #d52b1e 74%); border-radius: 1px; position: relative; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+.flag-ca i { position: absolute; left: 7px; top: 4px; width: 4px; height: 4px; background: #d52b1e; transform: rotate(45deg); }
+.acc { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 0 8px; }
+.acc-h { display: flex; align-items: flex-start; gap: 12px; text-align: left; }
+.acc-h img { margin-top: 7px; }
+.acc-h span { display: flex; flex-direction: column; }
+.acc-h b { font-weight: 600; font-size: 16px; line-height: 24px; color: var(--heading); }
+.acc-h small { font-size: 14px; color: var(--body); }
+.acc-b { grid-column: 1 / -1; padding: 8px 0 8px 20px; }
+.acc-b b { font-weight: 600; color: var(--heading); }
+.acc-b p { margin: 0; color: var(--body); }
+.acc .edit { align-self: start; font-weight: 600; }
+.meter { display: inline-block; width: 80px; height: 6px; border-radius: 3px; background: #eceff3; vertical-align: 1px; margin-right: 8px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--action); }
+.meter i.over { background: #c76a00; }
+.ex-form { display: flex; flex-direction: column; gap: 20px; padding: 0 8px 8px; }
+.switch-row { display: flex; align-items: center; gap: 16px; justify-content: space-between; padding: 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.switch-row b { display: block; font-weight: 600; color: var(--heading); }
+.switch-row small { display: block; color: var(--body); font-size: 14px; }
+.switch { -webkit-appearance: none; appearance: none; width: 40px; height: 22px; border-radius: 11px; background: #c4c4c4; position: relative; flex: none; cursor: pointer; transition: background .15s; margin: 0; }
+.switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .15s; }
+.switch:checked { background: var(--action); }
+.switch:checked::after { transform: translateX(18px); }
+.switch:disabled { opacity: .6; cursor: not-allowed; }
+.switch:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 /* Manage modals */
 .scrim.mg { place-items: start center; overflow-y: auto; padding-block: 40px; }
 .mdl { width: 496px; max-width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, .14), 0 2px 6px rgba(0, 0, 0, .08); }
@@ -629,6 +680,7 @@ const defaults = () => ({
 
 const fsDefaults = () => ({ tab: 'create', email: 'john.parker@naplesstore.com', password: 'Naples#2026', show: false, signedIn: false, label: 'Creating account' });
 const S = {
+  paySub: true,
   d: defaults(), errors: {}, done: new Set(), completed: false, returnToReview: false,
   modal: null, progressOpen: false, collapsed: false, menuOpen: false,
   failNext: false, submitting: false, submitError: '', protoOpen: false,
@@ -637,7 +689,9 @@ const S = {
 
 const FLOW = ['business-type', 'personal', 'business', 'payout', 'public', 'review'];
 const LABEL = { 'business-type': 'Business type', personal: 'Personal details', business: 'Business details', payout: 'Payout details', public: 'Public details', review: 'Review and submit' };
-const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'payouts', 'reports'];
+const ROUTES = ['start', 'payments', ...FLOW, 'done', 'manage', 'payouts', 'reports', 'account'];
+const MANAGE = ['manage', 'payouts', 'reports', 'account'];
+const isManage = () => MANAGE.includes(route());
 const FS_ROUTES = ['payments', 'account', 'creating', ...FLOW, 'done'];
 const MODE = () => (location.hash.startsWith('#fs-') ? 'fs' : 'bo');
 const route = () => {
@@ -912,6 +966,7 @@ const screens = {
 
   manage: () => manageView(),
   payouts: () => payoutsView(),
+  account: () => accountView(),
   reports: () => reportsView(),
 };
 
@@ -1044,7 +1099,7 @@ const bankLabel = () => {
   const b = BANKS.find((x) => x.id === S.d.bank), a = S.d.linked[S.d.payoutAcct];
   return b && a ? `${b.name} ••••${a.last4}` : 'Wells Fargo ••••1234';
 };
-const crumbs = (name) => `<nav class="crumbs" aria-label="Breadcrumb"><button data-toast="Home isn’t part of this prototype.">Home</button><span>/</span><button data-act="nav-payments">Payments</button><span>/</span><span aria-current="page" class="cur-crumb">${name}</span></nav><h1 class="pg-title">${name}</h1>`;
+const crumbs = (name) => `<nav class="crumbs" aria-label="Breadcrumb"><button data-toast="Home isn’t part of this prototype.">Home</button><span>/</span><button data-act="sub-nav" data-to="manage">Payments</button><span>/</span><span aria-current="page" class="cur-crumb">${name}</span></nav><h1 class="pg-title">${name}</h1>`;
 function balanceBlock() {
   const b = S.mg.bal, total = b.onWay + b.upcoming + b.available;
   return `<div class="bal-row">
@@ -1133,6 +1188,172 @@ function reportsView() {
     </div>
     ${body}
   </section>`;
+}
+
+/* ----- Account ----- */
+const PM_GROUPS = [
+  ['Cards', 'Popular for consumers and businesses to pay online or in person. Linga supports global and local card networks.', [['cards', 'Cards', 'Popular globally']]],
+  ['Wallets', 'Improve conversion and reduce fraud on mobile. Customers pay with a stored card or balance.', [['applepay', 'Apple Pay', 'Popular globally'], ['googlepay', 'Google Pay', 'Popular globally'], ['link', 'Link', 'Popular globally']]],
+  ['Bank redirects', 'Improve conversion and reduce fraud with non-US consumers. Customers pay online using their bank account.', [['bancontact', 'Bancontact', 'Popular in Belgium'], ['ideal', 'iDEAL', 'Popular in the Netherlands'], ['sofort', 'Sofort', 'Popular in Germany, Austria, and Switzerland']]],
+  ['Buy now, pay later', 'Reach customers who want to pay in installments. Your business still receives full payment at checkout.', [['affirm', 'Affirm', 'Popular in United States and Canada'], ['afterpay', 'Afterpay / Clearpay', 'Popular in Australia, Canada, New Zealand, the United Kingdom, and the United States'], ['klarna', 'Klarna', 'Popular in Europe and the United States']]],
+];
+const PM_TILE = { cards: ['#e3e8ee', '#3c4257', '▭'], applepay: ['#fff', '#000', 'Pay'], googlepay: ['#fff', '#5f6368', 'G Pay'], link: ['#00D66F', '#011E0F', ''], bancontact: ['#eef2f8', '#1e3764', 'BC'], ideal: ['#cc0066', '#fff', 'iD'], sofort: ['#333', '#fff', 'S'], affirm: ['#4a4af4', '#fff', 'a'], afterpay: ['#b2fce4', '#000', 'A/'], klarna: ['#ffb3c7', '#0b051d', 'K'] };
+const TAX_CODES = [['food', 'Food and beverage – Prepared food', 'Meals and drinks prepared for immediate consumption, including dine-in and takeout. Sales tax applies in most US states, often at a higher local rate.'], ['alcohol', 'Food and beverage – Alcoholic beverages', 'Beer, wine and spirits served by the drink or the bottle. Some states add a separate liquor tax.'], ['grocery', 'Food and beverage – Groceries', 'Unprepared food for home consumption. Exempt or reduced-rate in many states.'], ['services', 'General – Services', 'General category for services. Use it only when there is no more specific services category.'], ['goods', 'General – Tangible goods', 'Physical items sold to customers, such as merchandise.'], ['giftcard', 'Gift cards', 'Stored-value cards. Not taxed when sold; tax applies when redeemed.']];
+const PROVINCES = [['ON', 'Ontario'], ['BC', 'British Columbia'], ['QC', 'Quebec'], ['AB', 'Alberta']];
+const flag = (country) => (country === 'Canada' ? '<span class="flag-ca" aria-hidden="true"><i></i></span>' : `<span class="flag">${SVG_FLAG}</span>`);
+function acDefaults() {
+  const regs = [['Florida', 'United States', 'Active', 'October 2, 2026'], ['Georgia', 'United States', 'Active', 'January 1, 2026'], ['Alabama', 'United States', 'Expired', 'March 1, 2024'], ['Texas', 'United States', 'Active', 'June 15, 2025'], ['New York', 'United States', 'Active', 'April 22, 2025'], ['California', 'United States', 'Active', 'July 21, 2024'], ['Tennessee', 'United States', 'Expired', 'February 1, 2024'], ['South Carolina', 'United States', 'Active', 'August 1, 2025'], ['North Carolina', 'United States', 'Active', 'September 1, 2025'], ['Illinois', 'United States', 'Active', 'November 1, 2024'], ['Ontario', 'Canada', 'Active', 'May 3, 2025'], ['British Columbia', 'Canada', 'Expired', 'March 1, 2023']]
+    .map(([loc, country, status, start], i) => ({ id: 'reg_' + i, loc, country, status, start }));
+  return { tab: 'general', regTab: 'all', regPg: 0, thTab: 'all', open: { addr: true, code: true }, code: 'food', svcCode: '', exRange: '', exTz: 'ny', exErr: '', exBusy: false,
+    pm: { cards: [true], applepay: [true], googlepay: [true, 'Additional information required'], link: [true], bancontact: [false], ideal: [false], sofort: [false], affirm: [false], afterpay: [false], klarna: [false] }, regs,
+    th: [['Georgia', '$100,000 or 200 transactions', 112, '$112,480 / 1,406', 'Exceeded', 'Exceeded Oct 14, 2026'], ['Alabama', '$250,000', 41, '$102,300 / 1,233', 'Monitoring', '—'], ['South Carolina', '$100,000', 18, '$18,240 / 214', 'Monitoring', '—'], ['Tennessee', '$100,000', 9, '$9,120 / 108', 'Monitoring', '—'], ['Mississippi', '$250,000', 3, '$7,510 / 92', 'Monitoring', '—']] };
+}
+const acBox = (title, sub, body, extra = '') => `<section class="pbox ac"><div class="ac-h"><div><h2>${title}</h2><p>${sub}</p></div>${extra}</div>${body}</section>`;
+function accountView() {
+  if (!S.mg) S.mg = mgDefaults();
+  const g = S.mg, a = g.ac || (g.ac = acDefaults()), d = S.d;
+  const tabs = `<div class="rtabs" role="tablist">${[['general', 'General'], ['documents', 'Documents'], ['tax', 'Tax']].map(([k, t]) => `<button role="tab" class="rtab${a.tab === k ? ' on' : ''}" aria-selected="${a.tab === k}" data-act="ac-tab" data-tab="${k}">${t}</button>`).join('')}</div>`;
+  const addr = `${esc(d.street)}${d.unit ? ', ' + esc(d.unit) : ''}<br>${esc(d.city)}, ${esc(d.state)} ${esc(d.zip)} US`;
+  let body = '';
+  if (a.tab === 'general') {
+    const bank = BANKS.find((b) => b.id === d.bank), acct = d.linked[d.payoutAcct];
+    const pname = bank && acct ? bank.name : 'Wells Fargo', last4 = acct ? acct.last4 : '1234';
+    const plogo = !bank || d.bank === 'wellsfargo' ? `<div class="logo40 flush">${ic('wellsfargo-square', 40)}</div>` : `<div class="logo40"><img class="bank-mini" src="${BANKS_DIR}bank-${bank.id}.svg" width="38" alt=""></div>`;
+    const rows = (pairs) => pairs.map(([k, v]) => `<div class="rrow"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+    const card = (title, edit, inner, badge2 = '') => `<div class="rcard"><div class="rcard-head"><p>${title}</p>${badge2}<button class="edit" data-act="ac-edit" data-sec="${edit}">Edit</button></div>${inner}</div>`;
+    body = acBox('Account settings', 'Manage account and business settings.', `<div class="ac-cards">
+      <div class="sec"><div class="sec-title"><p>Business details</p></div>${card(d.businessType === 'Individual' ? 'Naples store' : 'Naples Store, LLC', 'business', rows([['Website', esc(d.website.startsWith('http') ? d.website : 'https://' + d.website)], ['Address', addr], ['Phone', esc(d.phone)], ['Other information provided', 'Industry, Product description']]))}</div>
+      <div class="sec"><div class="sec-title"><p>Public details</p></div>${card('Customer support information', 'public', rows([['Statement descriptor', `<span class="mono">${esc(d.descriptor.toUpperCase())}</span>`], ['Support address', addr], ['Support phone', esc(d.supportPhone)]]))}</div>
+      <div class="sec"><div class="sec-title"><p>Management and ownership</p></div>${card(`${esc(d.firstName)} ${esc(d.lastName)}`, 'person', rows([['Title', 'Account representative, CEO, and owner'], ['Email', esc(d.email)], ['Date of birth', esc(prettyDob(d.dob))], ['Address', addr], ['Other information provided', 'Phone']]), '<span class="pill ok">Verified</span>')}</div>
+      <div class="sec"><div class="sec-title"><p>Payout details</p></div>
+        <div class="rcard payout">${plogo}<div class="c"><div class="tl"><p>${esc(pname)}</p><span class="pill">Default</span><span class="chipwrap"><button class="more-btn" data-act="ac-pop" data-k="payout" aria-label="Payout account options" aria-expanded="${g.pop === 'payout'}">${ic('more', 16)}</button>${g.pop === 'payout' ? `<div class="fpop right" role="menu"><button class="fopt" role="menuitem" data-act="m-payout">Pay out now</button><button class="fopt" role="menuitem" data-toast="Replacing the bank account runs the Link bank connection again.">Replace bank account</button><button class="fopt" role="menuitem" data-toast="Adding a second account isn’t part of this prototype yet.">Add another account</button></div>` : ''}</span></div>
+        <div class="mono" style="font-size:14px">⑆ 110000000 ⑆ ••••${last4}</div><div>USD, Instant-eligible</div></div></div></div>
+    </div>`)
+    + acBox('Payment methods', 'Add and manage your payment methods.', `<div class="pm-groups">${PM_GROUPS.map(([gt, gd, items]) => `<div class="pm-g"><h3>${gt}</h3><p>${gd}</p><ul>${items.map(([id, name, desc]) => {
+        const [on, note] = a.pm[id], [bg, fg, tx] = PM_TILE[id];
+        return `<li><button data-act="ac-pm" data-id="${id}"><span class="pm-tile" style="background:${bg};color:${fg}">${id === 'link' ? LK_CHEV(18, '#011E0F') : tx}</span><span class="pm-t"><b>${name}${on ? ' <span class="pill ok">On</span>' : ''}</b><small>${desc}</small></span>${note ? `<span class="pm-note">${note}</span>` : ''}${ic('chevron-forward', 20)}</button></li>`;
+      }).join('')}</ul></div>`).join('')}</div>`);
+  }
+  if (a.tab === 'documents') {
+    const docs = [['Tax form', 'Form 1099-K · 2025', 'Jan 31, 2026'], ['Statement', 'Monthly statement · October 2026', 'Nov 1, 2026'], ['Statement', 'Monthly statement · September 2026', 'Oct 1, 2026'], ['Agreement', 'Linga Payments services agreement', 'Oct 2, 2026'], ['Agreement', 'Fee disclosure', 'Oct 2, 2026']];
+    body = acBox('Documents', 'Access documents and account statements.', `<div class="tbl-scroll"><table class="tbl docs"><thead><tr><th>Type</th><th>Name</th><th class="grow">Created</th><th></th></tr></thead><tbody>
+      ${docs.map(([t, n, c]) => `<tr><td>${t}</td><td>${n}</td><td class="grow">${c}</td><td class="r"><button class="linkbtn" data-toast="We’ll email “${esc(n)}” as a PDF to ${esc(S.d.email)}.">Download</button></td></tr>`).join('')}</tbody></table></div>`);
+  }
+  if (a.tab === 'tax') {
+    const code = TAX_CODES.find((c) => c[0] === a.code);
+    const acc = (k, title, sub, inner) => `<div class="acc"><button class="acc-h" data-act="ac-acc" data-k="${k}" aria-expanded="${a.open[k]}">${ic('chevron-down', 8, 8, a.open[k] ? '' : 'rot')}<span><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</span></button><button class="edit" data-act="ac-edit" data-sec="${k === 'addr' ? 'taxaddr' : 'taxcode'}">Edit</button>${a.open[k] ? `<div class="acc-b">${inner}</div>` : ''}</div>`;
+    const regs = a.regs.filter((r) => a.regTab === 'all' || r.status.toLowerCase() === a.regTab), pages = Math.max(1, Math.ceil(regs.length / 10));
+    if (a.regPg >= pages) a.regPg = pages - 1;
+    const slice = regs.slice(a.regPg * 10, a.regPg * 10 + 10);
+    const th = a.th.filter((r) => a.thTab === 'all' || r[4].toLowerCase() === a.thTab);
+    body = acBox('Tax', 'Configure these settings to automatically calculate and collect tax on your payments.',
+      acc('addr', 'Tax address', `${esc(d.state)}, United States`, `<b>Head office address</b><p>${addr.replace(' US', ' United States')}</p>`) + acc('code', 'Product tax code', '', `<b>${code[1]}</b><p>${code[2]}</p>`))
+    + acBox('Tax registrations', 'Locations where you have a registration, and want to collect taxes.', `
+      <div class="tabs left" role="tablist">${[['all', 'All registrations'], ['active', 'Active'], ['expired', 'Expired']].map(([k, t]) => `<button role="tab" class="tab${a.regTab === k ? ' on' : ''}" aria-selected="${a.regTab === k}" data-act="ac-regtab" data-tab="${k}">${t}</button>`).join('')}</div>
+      <div class="tbl-scroll"><table class="tbl"><thead><tr><th class="grow">Location</th><th></th><th>Status</th><th>Start date</th><th></th></tr></thead><tbody>
+      ${slice.map((r) => `<tr><td class="grow">${flag(r.country)} ${esc(r.loc)}</td><td class="r muted">${esc(r.country)}</td><td>${badge(r.status === 'Active' ? 'Active' : 'Expired')}</td><td>${esc(r.start)}</td><td class="r"><span class="chipwrap"><button class="more-btn" data-act="ac-pop" data-k="${r.id}" aria-label="Options for ${esc(r.loc)}" aria-expanded="${g.pop === r.id}">${ic('more', 16)}</button>${g.pop === r.id ? `<div class="fpop right" role="menu">${r.status === 'Active' ? `<button class="fopt" role="menuitem" data-act="ac-reg-end" data-id="${r.id}">End registration</button>` : `<button class="fopt" role="menuitem" data-act="ac-reg-renew" data-id="${r.id}">Reactivate</button>`}<button class="fopt" role="menuitem" data-act="ac-reg-rm" data-id="${r.id}">Remove</button></div>` : ''}</span></td></tr>`).join('') || '<tr class="empty"><td colspan="5">No registrations here yet.</td></tr>'}
+      </tbody></table></div>
+      <div class="tx-foot"><span><b>${regs.length ? a.regPg * 10 + 1 : 0}–${Math.min(regs.length, a.regPg * 10 + 10)}</b> of <b>${regs.length}</b> results</span><div class="pager"><button class="btn secondary auto" data-act="ac-reg-prev"${a.regPg === 0 ? ' disabled' : ''}>Previous</button><button class="btn secondary auto" data-act="ac-reg-next"${a.regPg >= pages - 1 ? ' disabled' : ''}>Next</button></div></div>`,
+      '<button class="btn secondary auto" data-act="ac-reg-add">Add registration</button>')
+    + acBox('Product tax code', 'Assign a tax code to your “Dine-in meals” service so Linga Tax calculates the correct tax on each order.', `<div class="field"><input id="ac-svc" class="in" list="ac-codes" data-ac="svcCode" placeholder="Search..." value="${esc(a.svcCode)}" aria-label="Tax code for Dine-in meals"><datalist id="ac-codes">${TAX_CODES.map((c) => `<option value="${esc(c[1])}"></option>`).join('')}</datalist>${a.svcCode ? `<p class="help">${esc((TAX_CODES.find((c) => c[1] === a.svcCode) || [, , 'Choose a code from the list.'])[2])}</p>` : ''}</div>`)
+    + acBox('Threshold Monitoring', 'Sales tracked by tax location. Locations where thresholds have been exceeded may require registering to collect taxes.', `
+      <div class="tabs left" role="tablist">${[['all', 'All'], ['exceeded', 'Exceeded'], ['monitoring', 'Monitoring']].map(([k, t]) => `<button role="tab" class="tab${a.thTab === k ? ' on' : ''}" aria-selected="${a.thTab === k}" data-act="ac-thtab" data-tab="${k}">${t}</button>`).join('')}</div>
+      <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Location</th><th>Threshold</th><th>% of gross volume</th><th>Est. Sales/Transactions</th><th class="grow">Limit</th><th></th></tr></thead><tbody>
+      ${th.map(([loc, lim, pct, est, st, note]) => `<tr><td>${flag('US')} ${loc}</td><td>${lim}</td><td><span class="meter"><i style="width:${Math.min(100, pct)}%" class="${pct >= 100 ? 'over' : ''}"></i></span> ${pct}%</td><td>${est}</td><td class="grow">${st === 'Exceeded' ? `<span class="pill warn">${note}</span>` : note}</td><td class="r">${st === 'Exceeded' && !a.regs.some((r) => r.loc === loc && r.status === 'Active') ? `<button class="linkbtn" data-act="ac-reg-add" data-loc="${loc}">Register</button>` : ''}</td></tr>`).join('') || '<tr class="empty"><td colspan="6">Nothing to show here.</td></tr>'}
+      </tbody></table></div>`)
+    + acBox('Export tax transactions', 'Retrieve and export your tax transactions for reporting and analysis purposes, ensuring compliance with tax regulations.', `<div class="ex-form">
+      <div class="field"><label class="lbl-t" for="ac-range">Date Range</label><select id="ac-range" class="sel${a.exErr ? ' invalid' : ''}" data-ac="exRange">${[['', 'Select a range'], ['lastmonth', 'Last month · Oct 1 – Oct 31, 2026'], ['quarter', 'This quarter · Oct 1 – Nov 2, 2026'], ['ytd', 'Year to date · Jan 1 – Nov 2, 2026'], ['lastyear', 'Last year · 2025']].map(([v, t]) => `<option value="${v}"${a.exRange === v ? ' selected' : ''}>${t}</option>`).join('')}</select>${a.exErr ? `<p class="err" role="alert">${a.exErr}</p>` : ''}</div>
+      <div class="field"><label class="lbl-t" for="ac-tz">Time Zone</label><select id="ac-tz" class="sel" data-ac="exTz">${Object.entries(REP_TZ).map(([k, v]) => `<option value="${k}"${a.exTz === k ? ' selected' : ''}>🕒 ${v[0]}</option>`).join('')}<option value="utc"${a.exTz === 'utc' ? ' selected' : ''}>🕒 UTC</option></select><p class="help" style="font-size:12px;padding:2px 0 0">You can view reports in your time zone or UTC.</p></div>
+      <button class="btn primary" data-act="ac-export"${a.exBusy ? ' aria-busy="true" disabled' : ''}>${a.exBusy ? spin('Exporting…') : 'Export'}</button></div>`);
+  }
+  return `${crumbs('Account')}${tabs}${body}`;
+}
+const AC_EDIT = {
+  business: ['Business details', [['website', 'Business website'], ['phone', 'Business phone']]],
+  public: ['Customer support information', [['descriptor', 'Statement descriptor'], ['supportPhone', 'Support phone']]],
+  person: ['Representative', [['firstName', 'First name'], ['lastName', 'Last name'], ['email', 'Email']]],
+  taxaddr: ['Tax address', [['street', 'Street address'], ['city', 'City'], ['state', 'State'], ['zip', 'Zip code']]],
+};
+const AC_MODALS = {};
+AC_MODALS.acedit = (m) => {
+  if (m.sec === 'taxcode') return mdl('<h2 class="mdl-t" id="mdl-t">Product tax code</h2><p class="mdl-p">The default code Linga Tax uses for items that don’t have their own.</p>',
+    `${mRadios('code', TAX_CODES.map((c) => [c[0], c[1], c[2]]))}<div class="btns"><button class="btn primary" data-act="ac-save">Save</button><button class="btn secondary" data-act="modal-close">Cancel</button></div>`);
+  const [title, fields] = AC_EDIT[m.sec];
+  return mdl(`<h2 class="mdl-t" id="mdl-t">Edit ${m.sec === 'person' ? 'representative' : title.toLowerCase()}</h2>`,
+    `${fields.map(([k, l]) => `<div class="field"><label class="lbl-t" for="m-${k}">${l}</label>${k === 'state' ? mSel(k, STATES) : mIn(k, { type: k === 'email' ? 'email' : 'text' })}${mErr(k)}</div>`).join('')}
+     <div class="btns"><button class="btn primary" data-act="ac-save">Save</button><button class="btn secondary" data-act="modal-close">Cancel</button></div>`);
+};
+AC_MODALS.acpm = (m) => {
+  const name = PM_GROUPS.flatMap((x) => x[2]).find((x) => x[0] === m.id)[1], always = m.id === 'cards';
+  return mdl(`<h2 class="mdl-t" id="mdl-t">${name}</h2><p class="mdl-p">${PM_GROUPS.find((x) => x[2].some((y) => y[0] === m.id))[1]}</p>`,
+    `<label class="switch-row"><span><b>Accept ${name}</b><small>${always ? 'Cards are always on for Linga Payments.' : m.on ? 'Customers see this option at checkout and on the terminal when it’s supported.' : 'Turn this on to show it at checkout.'}</small></span><input type="checkbox" class="switch" data-m="on"${m.on ? ' checked' : ''}${always ? ' disabled' : ''} aria-label="Accept ${name}"></label>
+     ${m.id === 'googlepay' && m.note ? `<div class="field"><label class="lbl-t" for="m-domain">Verify your website</label><p class="help" style="padding:0 0 6px">Google needs to confirm you own the website where customers pay.</p>${mIn('domain', { ph: 'www.example.com' })}${mErr('domain')}</div>` : ''}
+     <div class="btns"><button class="btn primary" data-act="ac-pm-save">Save</button><button class="btn secondary" data-act="modal-close">Cancel</button></div>`);
+};
+AC_MODALS.acreg = (m) => mdl('<h2 class="mdl-t" id="mdl-t">Add registration</h2><p class="mdl-p">Add a location where Naples store is registered to collect tax. Linga Tax starts calculating tax there from the start date.</p>',
+  `<div class="field"><label class="lbl-t" for="m-country">Country</label>${mSel('country', ['United States', 'Canada'])}</div>
+   <div class="field"><label class="lbl-t" for="m-region">${m.country === 'Canada' ? 'Province' : 'State'}</label>${mSel('region', [['', m.country === 'Canada' ? 'Select a province' : 'Select a state'], ...(m.country === 'Canada' ? PROVINCES : STATES).map(([, n]) => [n, n])])}${mErr('region')}</div>
+   <div class="field"><label class="lbl-t" for="m-start">Start date</label>${mIn('start', { type: 'date' })}${mErr('start')}</div>
+   <div class="field"><label class="lbl-t" for="m-regno">Registration number <span class="pill">Optional</span></label>${mIn('regno', { ph: 'e.g. 12-3456789' })}</div>
+   <div class="btns"><button class="btn primary" data-act="ac-reg-save">Add registration</button><button class="btn secondary" data-act="modal-close">Cancel</button></div>`);
+function acAction(act, t) {
+  const g = S.mg, a = g?.ac, m = S.modal, d = S.d;
+  switch (act) {
+    case 'ac-tab': a.tab = t.dataset.tab; g.pop = null; render(); document.querySelector('.rtab.on')?.focus(); return true;
+    case 'ac-pop': g.pop = g.pop === t.dataset.k ? null : t.dataset.k; render(); document.querySelector('.fpop .fopt')?.focus(); return true;
+    case 'ac-edit': {
+      const sec = t.dataset.sec;
+      if (sec === 'taxcode') { openModal('acedit', { sec, code: a.code }); return true; }
+      const vals = {}; AC_EDIT[sec][1].forEach(([k]) => { vals[k] = d[k]; }); openModal('acedit', { sec, ...vals }); return true;
+    }
+    case 'ac-save': {
+      if (m.sec === 'taxcode') { a.code = m.code; S.modal = null; render(); toast('Product tax code updated.'); return true; }
+      const e = {}, v = (k) => String(m[k] ?? '').trim();
+      AC_EDIT[m.sec][1].forEach(([k, l]) => { if (!v(k)) e[k] = `Enter ${l.toLowerCase()}.`; });
+      if (m.website !== undefined && v('website') && !/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(v('website'))) e.website = 'Enter a valid website, like www.example.com.';
+      ['phone', 'supportPhone'].forEach((k) => { if (m[k] !== undefined && digits(m[k]).length !== 10) e[k] = 'Enter a 10-digit US phone number.'; });
+      if (m.email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) e.email = 'Enter a valid email address, like name@example.com.';
+      if (m.descriptor !== undefined && (v('descriptor').length < 5 || v('descriptor').length > 22)) e.descriptor = 'Use 5 to 22 characters.';
+      if (m.zip !== undefined && !/^\d{5}$/.test(v('zip'))) e.zip = 'Enter a 5-digit zip code.';
+      if (Object.keys(e).length) { m.err = e; renderLayer(); document.querySelector('.mdl .invalid')?.focus(); return true; }
+      AC_EDIT[m.sec][1].forEach(([k]) => { d[k] = v(k); });
+      S.modal = null; render(); toast(`${m.sec === 'person' ? 'Representative' : AC_EDIT[m.sec][0]} updated.`); return true;
+    }
+    case 'ac-pm': { const [on, note] = a.pm[t.dataset.id]; openModal('acpm', { id: t.dataset.id, on, note, domain: d.website }); return true; }
+    case 'ac-pm-save': {
+      if (m.id === 'googlepay' && m.note && m.on && !/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(String(m.domain || '').trim())) { m.err = { domain: 'Enter the website where customers pay, like www.example.com.' }; renderLayer(); return true; }
+      const name = PM_GROUPS.flatMap((x) => x[2]).find((x) => x[0] === m.id)[1];
+      a.pm[m.id] = [!!m.on, m.id === 'googlepay' && m.note && m.on ? '' : a.pm[m.id][1]]; S.modal = null; render(); toast(`${name} is ${m.on ? 'on' : 'off'}.`); return true;
+    }
+    case 'ac-acc': a.open[t.dataset.k] = !a.open[t.dataset.k]; render(); return true;
+    case 'ac-regtab': a.regTab = t.dataset.tab; a.regPg = 0; render(); return true;
+    case 'ac-thtab': a.thTab = t.dataset.tab; render(); return true;
+    case 'ac-reg-prev': a.regPg = Math.max(0, a.regPg - 1); render(); return true;
+    case 'ac-reg-next': a.regPg += 1; render(); return true;
+    case 'ac-reg-end': case 'ac-reg-renew': case 'ac-reg-rm': {
+      const r = a.regs.find((x) => x.id === t.dataset.id); g.pop = null;
+      if (act === 'ac-reg-rm') { a.regs = a.regs.filter((x) => x !== r); toast(`${r.loc} registration removed.`); }
+      else { r.status = act === 'ac-reg-end' ? 'Expired' : 'Active'; if (r.status === 'Active') r.start = 'November 2, 2026'; toast(`${r.loc} registration ${act === 'ac-reg-end' ? 'ended' : 'reactivated'}.`); }
+      render(); return true;
+    }
+    case 'ac-reg-add': openModal('acreg', { country: 'United States', region: t.dataset.loc || '', start: '2026-11-02', regno: '' }); return true;
+    case 'ac-reg-save': {
+      const e = {};
+      if (!m.region) e.region = `Select a ${m.country === 'Canada' ? 'province' : 'state'}.`;
+      else if (a.regs.some((r) => r.loc === m.region && r.status === 'Active')) e.region = `You already have an active registration in ${m.region}.`;
+      if (!m.start) e.start = 'Choose a start date.';
+      if (Object.keys(e).length) { m.err = e; renderLayer(); return true; }
+      const [y, mo, da] = m.start.split('-').map(Number), when = new Date(y, mo - 1, da).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      a.regs.unshift({ id: 'reg_' + Date.now(), loc: m.region, country: m.country, status: 'Active', start: when }); a.regTab = 'all'; a.regPg = 0;
+      S.modal = null; render(); toast(`${m.region} registration added. Linga Tax collects tax there from ${when}.`); return true;
+    }
+    case 'ac-export':
+      if (!a.exRange) { a.exErr = 'Select a date range.'; render(); document.getElementById('ac-range')?.focus(); return true; }
+      a.exErr = ''; a.exBusy = true; render();
+      setTimeout(() => { a.exBusy = false; render(); toast(`Tax transactions export started. We’ll email the CSV to ${S.d.email}.`); }, 1000);
+      return true;
+  }
+  return false;
 }
 
 function payoutsView() {
@@ -1430,7 +1651,7 @@ function mgAction(act, t) {
 
 const NAV_TOP = [['nav-enterprise', 'Enterprise'], ['nav-stores', 'Stores']];
 const NAV_STORE = [['nav-home', 'Home'], ['nav-products', 'Products/Items', 1], ['nav-inventory', 'Inventory', 1], ['nav-users', 'User Management', 1], ['nav-customers', 'Customers', 1], ['nav-marketing', 'Marketing', 1], ['nav-integration', 'Integration Hub'], ['nav-order', 'Order Connect', 1], ['nav-reports', 'Reports', 1], ['nav-payments', 'Payments']];
-const mi = ([icon, label, chev], active) => `<button class="mi${active ? ' active' : ''}" ${label === 'Payments' ? 'data-act="nav-payments"' : `data-toast="${label} isn’t part of this prototype. Use Payments."`} title="${label}"${active ? ' aria-current="page"' : ''}>${ic(icon, 20)}<span class="lbl">${label}</span>${chev ? ic('chevron-forward', 20, 20, 'chev') : ''}</button>`;
+const mi = ([icon, label, chev], active) => `<button class="mi${active ? ' active' : ''}" ${label === 'Payments' ? `data-act="nav-payments"${S.completed || isManage() ? ` aria-expanded="${S.paySub}"` : ''}` : `data-toast="${label} isn’t part of this prototype. Use Payments."`} title="${label}"${active ? ' aria-current="page"' : ''}>${ic(icon, 20)}<span class="lbl">${label}</span>${chev ? ic('chevron-forward', 20, 20, 'chev') : label === 'Payments' && (S.completed || isManage()) ? ic('chevron-forward', 20, 20, 'chev' + (S.paySub ? ' open' : '')) : ''}</button>`;
 
 function shell(content) {
   return `
@@ -1453,11 +1674,11 @@ function shell(content) {
       <nav class="menu" aria-label="Back office">
         <div class="menu-group">${NAV_TOP.map((n) => mi(n)).join('')}</div>
         <div class="menu-store">Naples store</div>
-        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && !['manage', 'payouts', 'reports'].includes(route()))).join('')}${['manage', 'payouts', 'reports'].includes(route()) ? `<div class="subs">${[['Transactions', 'manage'], ['Payouts', 'payouts'], ['Reports', 'reports'], ['Account']].map(([x, to]) => { const on = to === route(); return `<button class="smi${on ? ' active' : ''}"${on ? ' aria-current="page"' : to ? ` data-act="sub-nav" data-to="${to}"` : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`; }).join('')}</div>` : ''}</div>
+        <div class="menu-group">${NAV_STORE.map((n) => mi(n, n[1] === 'Payments' && !isManage())).join('')}${(S.completed || isManage()) && S.paySub ? `<div class="subs">${[['Transactions', 'manage'], ['Payouts', 'payouts'], ['Reports', 'reports'], ['Account', 'account']].map(([x, to]) => { const on = to === route(); return `<button class="smi${on ? ' active' : ''}"${on ? ' aria-current="page"' : to ? ` data-act="sub-nav" data-to="${to}"` : ` data-toast="${x} is the next Manage page to design."`}>${x}</button>`; }).join('')}</div>` : ''}</div>
         <div class="menu-sep"><div class="menu-group">${mi(['nav-settings', 'Settings'])}</div></div>
         <div class="menu-group">${mi(['nav-shop', 'Shop'])}</div>
       </nav>
-      <main class="main${['manage', 'payouts', 'reports'].includes(route()) ? ' page' : ''}" id="main">${content}</main>
+      <main class="main${isManage() ? ' page' : ''}" id="main">${content}</main>
     </div>
   </div>`;
 }
@@ -1552,6 +1773,7 @@ const startPage = () => `
   </div>`;
 
 function render() {
+  if (isManage()) S.completed = true;
   const r = route();
   if (FLOW.includes(r) || r === 'done' || r === 'payments') document.title = 'Linga Payments Prototype';
   const app = document.getElementById('app');
@@ -1573,7 +1795,7 @@ function renderLayer() {
       <div class="dialog-foot"><button class="lg-btn out" data-act="modal-close" id="keep-btn">Keep editing</button><button class="lg-btn fill" data-act="leave">Leave form</button></div>
     </div></div>`;
   }
-  if (m && mgModals[m.type]) html = mgModals[m.type](m);
+  if (m && (mgModals[m.type] || AC_MODALS[m.type])) html = (mgModals[m.type] || AC_MODALS[m.type])(m);
   if (m && m.type === 'link') {
     const b = BANKS.find((x) => x.id === m.bank);
     let inner = '';
@@ -1693,7 +1915,7 @@ document.addEventListener('click', (ev) => {
   if (t.dataset.toast) { toast(t.dataset.toast); return; }
   if (t.dataset.goto) { go(t.dataset.goto); return; }
   if (t.dataset.jump) { S.protoOpen = false; go(t.dataset.jump); return; }
-  if (act && mgAction(act, t)) return;
+  if (act && (mgAction(act, t) || acAction(act, t))) return;
   if (t.dataset.edit) { S.returnToReview = true; go(t.dataset.edit); return; }
   if (t.dataset.bank) { S.modal = { type: 'link', bank: t.dataset.bank, phase: 'consent', sel: LK_ACCTS.map(() => true), email: S.d.email, phone: S.d.phone, err: {}, saved: false, focus: true }; renderLayer(); return; }
   if (t.dataset.lkacct) { const m = S.modal; m.sel[+t.dataset.lkacct] = !m.sel[+t.dataset.lkacct]; renderLayer(); document.querySelector(`[data-lkacct="${t.dataset.lkacct}"]`)?.focus(); return; }
@@ -1721,7 +1943,7 @@ document.addEventListener('click', (ev) => {
     case 'collapse':
       if (window.matchMedia('(max-width: 900px)').matches) S.menuOpen = !S.menuOpen; else S.collapsed = !S.collapsed;
       render(); break;
-    case 'nav-payments': go(S.completed ? 'manage' : 'payments'); break;
+    case 'nav-payments': if (S.completed || isManage()) { S.paySub = !S.paySub; render(); document.querySelector('.mi[data-act=nav-payments]')?.focus(); } else go('payments'); break;
     case 'manual-on': S.d.manual = true; S.errors = {}; render(); document.getElementById('f-holder')?.focus(); break;
     case 'manual-off': S.d.manual = false; S.errors = {}; render(); break;
     case 'lk-agree': {
@@ -1772,6 +1994,8 @@ document.addEventListener('change', (ev) => {
   if (ev.target.id === 'm-files') {
     const m = S.modal; [...ev.target.files].forEach((f) => m.files.push({ name: f.name, size: f.size })); delete m.err.files; renderLayer(); return;
   }
+  if (ev.target.dataset.ac) { const a = S.mg.ac, k = ev.target.dataset.ac; a[k] = ev.target.value; if (k === 'exRange') a.exErr = ''; render(); document.getElementById(ev.target.id)?.focus(); return; }
+  if (ev.target.dataset.m && ev.target.type === 'checkbox') { S.modal[ev.target.dataset.m] = ev.target.checked; renderLayer(); document.querySelector(`[data-m="${ev.target.dataset.m}"]`)?.focus(); return; }
   if (ev.target.dataset.m && (ev.target.type === 'radio' || ev.target.tagName === 'SELECT')) {
     const m = S.modal, k = ev.target.dataset.m; m[k] = ev.target.value; delete m.err[k]; if (k.startsWith('c')) delete m.err.caddr;
     if (k === 'speed') { const b = S.mg.bal; m.amount = (k === 'speed' && ev.target.value === 'instant' ? Math.min(514.89, b.available) : b.available).toFixed(2); m.err = {}; }
@@ -1783,7 +2007,8 @@ document.addEventListener('change', (ev) => {
 document.addEventListener('input', (ev) => {
   const el = ev.target;
   if (el.id === 'f-banksearch') { filterBanks(); return; }
-  if (el.dataset.m && el.type !== 'radio' && el.tagName !== 'SELECT') {
+  if (el.dataset.ac) return;
+  if (el.dataset.m && el.type !== 'radio' && el.type !== 'checkbox' && el.tagName !== 'SELECT') {
     const m = S.modal, k = el.dataset.m; m[k] = el.value;
     const ek = ['cstreet', 'cunit', 'ccity', 'czip'].includes(k) ? 'caddr' : k;
     if (m.err[ek]) { delete m.err[ek]; el.classList.remove('invalid'); el.closest('.money')?.classList.remove('invalid'); el.removeAttribute('aria-invalid'); document.getElementById('me-' + ek)?.remove(); }

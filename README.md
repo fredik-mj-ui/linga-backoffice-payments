@@ -41,7 +41,7 @@ Payments › Transactions in the back office (opens after onboarding, or from th
 - **Payment details:** fee breakdown, payment method, timeline, and Begin refund → Send refund (amount checks). Refunds update the status and timeline.
 - **Disputed payment:** dispute card with step-by-step guide, Accept dispute (confirm), and Counter dispute: 3 prefilled steps (reason, customer details, evidence upload) plus a review step.
 - **Fail the next submission** (Prototype menu) makes the next payout, refund or evidence submission fail.
-- Account in the menu is a placeholder for the next design.
+
 
 ### Manage · Payouts
 
@@ -50,6 +50,15 @@ Payments › Payouts: the Instant Payouts banner (Pay out instantly), the balanc
 ### Manage · Reports
 
 Payments › Reports with Balance summary and Payout reconciliation tabs. Date range (Sep, Oct, or Nov month to date) and Timezone change every table; the sample numbers add up (starting balance + activity − payouts = ending balance). Download prepares the CSV and says it will be emailed, since the prototype can't save files.
+
+### Manage · Account
+
+Payments › Account with three tabs:
+- **General:** account settings built from the onboarding answers (business, public, representative and payout details), each with an Edit popup that checks the fields; and payment methods (Cards, wallets, bank redirects, buy now pay later) with on/off popups. Google Pay asks you to verify a website first.
+- **Documents:** sample statements, the 1099-K and agreements, with Download.
+- **Tax:** tax address and product tax code (collapsible, editable), tax registrations (tabs, add, end, reactivate, remove, paging), a tax code search for the Dine-in meals service, threshold monitoring with a Register shortcut, and export with a required date range.
+
+The Payments item in the menu expands and collapses its sub-menu once onboarding is done; opening any Manage page counts as onboarding done.
 
 ## Run locally
 
