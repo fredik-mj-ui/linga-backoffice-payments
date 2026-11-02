@@ -21,7 +21,7 @@ Built from the Figma file "Stripe payments integration", section **Back Office O
 - The step name above each title opens a step list; finished steps are clickable.
 - Payout: search banks, pick a bank to run a simulated "Link your bank" step, or enter routing/account numbers manually.
 - Review: each **Edit** returns you to the step, and **Continue** brings you back to the review.
-- The **Prototype** button (bottom right) restarts with sample data, clears the current step, can make the next submission fail, and jumps to any screen, grouped by workflow (Back-office onboarding, Freestanding onboarding, Manage). The group you are in opens first.
+- The **Prototype** button (bottom right) clears the current step and jumps to any screen, grouped by workflow (Back-office onboarding, Freestanding onboarding, Manage). The group you are in opens first.
 
 ### Freestanding onboarding
 

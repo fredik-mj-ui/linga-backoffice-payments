@@ -1833,7 +1833,7 @@ const startPage = () => `
           <span class="meta"><span class="pill ready">Transactions · 13 screens</span><span class="go">Open →</span></span>
         </button>
       </div>
-      <p class="start-note">Tip: the Prototype button in the corner restarts the flow, clears a step’s fields and jumps to any screen in the three workflows.</p>
+      <p class="start-note">Tip: the Prototype button in the corner clears a step’s fields and jumps to any screen in the three workflows.</p>
     </div>
   </div>`;
 
@@ -1928,7 +1928,6 @@ function renderLayer() {
   const panel = S.protoOpen ? `<div class="proto-panel" role="menu">
       <span class="cap">Prototype</span>
       <button data-goto="start">Go to start page</button>
-      <button data-act="restart">Restart with sample data</button>
       ${inForm ? '<button data-act="clear-step">Clear fields on this step</button>' : ''}
       <span class="cap">Workflows</span>
       ${groups.map(([k, t, items]) => `<div class="pg"><button class="pg-h${k === curGrp ? ' cur' : ''}" data-act="proto-grp" data-k="${k}" aria-expanded="${grp === k}">${ic('chevron-forward', 16, 16, grp === k ? 'down' : '')}<span>${t}</span>${k === curGrp ? '<small>You’re here</small>' : ''}</button>${grp === k ? `<div class="pg-b">${items.join('')}</div>` : ''}</div>`).join('')}
